@@ -674,7 +674,6 @@
 //     </div>
 //   );
 // }
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createMenu, getAllMenus, deleteMenu } from "../../services/menuApi";
@@ -731,35 +730,37 @@ export default function MenuContainer() {
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed text-white
-                 px-4 sm:px-6 lg:px-10 py-10 md:py-16 overflow-x-hidden"
+                 px-4 sm:px-6 lg:px-10
+                 py-8 sm:py-12 md:py-16 overflow-x-hidden"
       style={{
         backgroundImage:
           "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80')",
       }}
     >
       {/* HEADER */}
-      <div className="text-center mb-10 md:mb-16">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-400 tracking-wider">
+      <div className="text-center mb-8 sm:mb-12 md:mb-16">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-yellow-400">
           Royal Gourmet Menu
         </h1>
-        <p className="text-gray-300 mt-3 text-sm sm:text-base md:text-lg">
+        <p className="text-gray-300 mt-2 text-xs sm:text-sm md:text-lg">
           Premium Cuisine • Luxury Dining • Signature Experience
         </p>
       </div>
 
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-10">
 
         {/* MENU LIST */}
-        <div className="xl:col-span-2 space-y-6 md:space-y-8">
+        <div className="xl:col-span-2 space-y-5 sm:space-y-6 md:space-y-8 order-2 xl:order-1">
           {menu?.map((m) => (
             <div
               key={m._id}
               onClick={() => orderhandler(m)}
               className="group bg-white/10 backdrop-blur-lg
                          border border-white/20
-                         rounded-2xl md:rounded-3xl overflow-hidden
-                         shadow-xl hover:-translate-y-2
+                         rounded-2xl md:rounded-3xl
+                         overflow-hidden shadow-xl
+                         hover:-translate-y-2
                          transition duration-500 cursor-pointer"
             >
               <div className="grid grid-cols-1 md:grid-cols-2">
@@ -769,22 +770,22 @@ export default function MenuContainer() {
                     <img
                       src={m.image}
                       alt={m.name}
-                      className="w-full h-48 sm:h-56 md:h-60 object-cover
+                      className="w-full h-40 sm:h-48 md:h-60 object-cover
                                  group-hover:scale-110 transition duration-700"
                     />
                   </div>
                 )}
 
-                <div className="p-5 md:p-8 flex flex-col justify-center space-y-3 md:space-y-4">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-yellow-400">
+                <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-center space-y-2 sm:space-y-3 md:space-y-4">
+                  <h2 className="text-lg sm:text-xl md:text-3xl font-semibold text-yellow-400">
                     {m.name}
                   </h2>
 
-                  <p className="text-gray-300 text-sm sm:text-base">
+                  <p className="text-gray-300 text-xs sm:text-sm md:text-base">
                     {m.description}
                   </p>
 
-                  <p className="text-lg sm:text-xl md:text-2xl text-green-400 font-semibold">
+                  <p className="text-base sm:text-lg md:text-2xl text-green-400 font-semibold">
                     ₹{m.price}
                   </p>
 
@@ -794,7 +795,9 @@ export default function MenuContainer() {
                         e.stopPropagation();
                         deleteHandler(m._id);
                       }}
-                      className="w-full sm:w-auto px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition text-sm"
+                      className="w-full sm:w-auto px-4 py-2
+                                 bg-red-600 rounded-lg
+                                 hover:bg-red-700 transition text-xs sm:text-sm"
                     >
                       Delete
                     </button>
@@ -806,55 +809,63 @@ export default function MenuContainer() {
         </div>
 
         {/* CART SECTION */}
-        <div className="bg-white/10 backdrop-blur-xl border border-yellow-500/30
-                        p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-xl
-                        xl:sticky xl:top-10">
-          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-yellow-400 text-center">
-            🛒 Your Cart
-          </h2>
+        <div className="order-1 xl:order-2">
+          <div
+            className="bg-white/10 backdrop-blur-xl
+                       border border-yellow-500/30
+                       p-4 sm:p-6 md:p-8
+                       rounded-2xl md:rounded-3xl shadow-xl
+                       xl:sticky xl:top-10"
+          >
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-yellow-400 text-center">
+              🛒 Your Cart
+            </h2>
 
-          {menuItem ? (
-            <div className="space-y-4">
-              <img
-                src={menuItem.image}
-                alt={menuItem.name}
-                className="w-full h-40 object-cover rounded-xl"
-              />
+            {menuItem ? (
+              <div className="space-y-3 md:space-y-4">
+                <img
+                  src={menuItem.image}
+                  alt={menuItem.name}
+                  className="w-full h-28 sm:h-36 md:h-40 object-cover rounded-xl"
+                />
 
-              <h3 className="text-lg font-semibold">
-                {menuItem.name}
-              </h3>
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold">
+                  {menuItem.name}
+                </h3>
 
-              <p className="text-green-400 font-bold">
-                ₹{menuItem.price}
+                <p className="text-green-400 font-bold text-sm sm:text-base">
+                  ₹{menuItem.price}
+                </p>
+
+                <button
+                  onClick={() => navigate("/dashboard/order")}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
+                             py-2 sm:py-3 rounded-xl font-semibold
+                             hover:scale-105 transition duration-300
+                             text-xs sm:text-sm md:text-base"
+                >
+                  Proceed to Order
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-400 text-center text-sm">
+                No item selected
               </p>
-
-              <button
-                onClick={() => navigate("/dashboard/order")}
-                className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
-                           py-3 rounded-xl font-semibold
-                           hover:scale-105 transition duration-300"
-              >
-                Proceed to Order
-              </button>
-            </div>
-          ) : (
-            <p className="text-gray-400 text-center">
-              No item selected
-            </p>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
       {/* ADMIN FORM */}
       {user?.accountType === "Admin" && (
         <div
-          className="max-w-4xl mx-auto mt-16 md:mt-20
+          className="max-w-4xl mx-auto mt-12 md:mt-20
                      bg-white/10 backdrop-blur-xl
                      border border-yellow-500/30
-                     p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-xl"
+                     p-4 sm:p-6 md:p-10
+                     rounded-2xl md:rounded-3xl shadow-xl"
         >
-          <h2 className="text-xl md:text-3xl font-semibold mb-6 md:mb-8 text-yellow-400 text-center">
+          <h2 className="text-lg sm:text-xl md:text-3xl font-semibold mb-6 md:mb-8 text-yellow-400 text-center">
             Add Signature Dish
           </h2>
 
@@ -866,7 +877,7 @@ export default function MenuContainer() {
                 setFormdata({ ...formdata, name: e.target.value })
               }
               className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 md:py-3 rounded-xl
+                         px-4 py-2 sm:py-3 rounded-xl
                          focus:ring-2 focus:ring-yellow-500 outline-none"
               required
             />
@@ -879,7 +890,7 @@ export default function MenuContainer() {
                 setFormdata({ ...formdata, price: e.target.value })
               }
               className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 md:py-3 rounded-xl
+                         px-4 py-2 sm:py-3 rounded-xl
                          focus:ring-2 focus:ring-yellow-500 outline-none"
               required
             />
@@ -895,7 +906,7 @@ export default function MenuContainer() {
                 })
               }
               className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 md:py-3 rounded-xl
+                         px-4 py-2 sm:py-3 rounded-xl
                          focus:ring-2 focus:ring-yellow-500 outline-none"
               required
             />
@@ -909,7 +920,7 @@ export default function MenuContainer() {
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
-                         py-3 md:py-4 rounded-xl font-semibold
+                         py-3 rounded-xl font-semibold
                          hover:scale-105 transition duration-300"
             >
               Add to Menu
