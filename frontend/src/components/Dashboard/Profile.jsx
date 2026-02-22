@@ -1,49 +1,142 @@
-import React from "react";
-import {Link} from 'react-router-dom'
-import { useSelector } from "react-redux";
-export default function Profile() {
-    const{user }=useSelector((state)=>state.auth);
-    if (!user) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-600 text-lg">Loading profile...</p>
-    </div>
-  );
-}
-  return (
-    <div className="min-h-screen bg-gray-100 px-4 py-10 w-[85%]">
+// import React from "react";
+// import {Link} from 'react-router-dom'
+// import { useSelector } from "react-redux";
+// export default function Profile() {
+//     const{user }=useSelector((state)=>state.auth);
+//     if (!user) {
+//   return (
+//     <div className="min-h-screen flex items-center justify-center">
+//       <p className="text-gray-600 text-lg">Loading profile...</p>
+//     </div>
+//   );
+// }
+//   return (
+//     <div className="min-h-screen bg-gray-100 px-4 py-10 w-[85%]">
       
+//       {/* Profile Card */}
+//       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+        
+//         {/* Header */}
+//         <div className="bg-gradient-to-r from-amber-600 to-yellow-500 h-40 relative">
+//           <div className="absolute -bottom-12 left-8">
+//          <img
+//   src={user?.image}
+//   alt="Profile"
+//   className="w-24 h-24 rounded-full object-cover border-4 border-white"
+// />
+
+//           </div>
+//         </div>
+
+//         {/* Content */}
+//         <div className="pt-16 px-8 pb-8">
+//           <h1 className="text-2xl font-bold text-gray-800">
+//             {user?.firstname}
+//           </h1>
+//           <h1 className="text-2xl font-bold text-gray-800">
+//             {user?.lastname}
+//           </h1>
+         
+
+//           {/* Info Grid */}
+//           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+            
+//             <div>
+//               <p className="text-sm text-gray-500">Email</p>
+//               <p className="font-medium text-gray-800">
+//                 {user.email}
+//               </p>
+//             </div>
+
+//             <div>
+//               <p className="text-sm text-gray-500">Phone</p>
+//               <p className="font-medium text-gray-800">
+//                 {user.phone}
+//               </p>
+//             </div>
+
+//             <div>
+//               <p className="text-sm text-gray-500">Role</p>
+//               <p className="font-medium text-gray-800">
+//                 {user.accountType}
+//               </p>
+//             </div>
+
+            
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className="flex flex-col sm:flex-row gap-4 mt-10">
+//             <button className="px-6 py-3 rounded-lg bg-amber-600 text-white 
+//                                font-semibold hover:bg-amber-700 transition">
+//               Edit Profile
+//             </button>
+
+//            <Link to="/change-password">
+//             <button className="px-6 py-3 rounded-lg border border-gray-300 
+//                                text-gray-700 font-semibold hover:bg-gray-100 transition">
+//               Change Password
+//             </button>
+//            </Link>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+export default function Profile() {
+  const { user } = useSelector((state) => state.auth);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 text-lg">Loading profile...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-gray-100 px-4 py-6 md:py-10">
+
       {/* Profile Card */}
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-        
-        {/* Header */}
-        <div className="bg-gradient-to-r from-amber-600 to-yellow-500 h-40 relative">
-          <div className="absolute -bottom-12 left-8">
-         <img
-  src={user?.image}
-  alt="Profile"
-  className="w-24 h-24 rounded-full object-cover border-4 border-white"
-/>
 
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-amber-600 to-yellow-500 h-32 md:h-40 relative">
+
+          {/* Profile Image */}
+          <div className="absolute -bottom-10 md:-bottom-12 left-1/2 md:left-8 transform -translate-x-1/2 md:translate-x-0">
+            <img
+              src={user?.image}
+              alt="Profile"
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-white"
+            />
           </div>
+
         </div>
 
         {/* Content */}
-        <div className="pt-16 px-8 pb-8">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {user?.firstname}
+        <div className="pt-14 md:pt-16 px-4 md:px-8 pb-8 text-center md:text-left">
+
+          {/* Name */}
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+            {user?.firstname} {user?.lastname}
           </h1>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {user?.lastname}
-          </h1>
-         
 
           {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
-            
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 text-left">
+
             <div>
               <p className="text-sm text-gray-500">Email</p>
-              <p className="font-medium text-gray-800">
+              <p className="font-medium text-gray-800 break-words">
                 {user.email}
               </p>
             </div>
@@ -62,32 +155,28 @@ export default function Profile() {
               </p>
             </div>
 
-            
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-10">
-            <button className="px-6 py-3 rounded-lg bg-amber-600 text-white 
-                               font-semibold hover:bg-amber-700 transition">
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
+
+            <button className="px-6 py-3 rounded-lg bg-amber-600 text-white font-semibold hover:bg-amber-700 transition">
               Edit Profile
             </button>
 
-           <Link to="/change-password">
-            <button className="px-6 py-3 rounded-lg border border-gray-300 
-                               text-gray-700 font-semibold hover:bg-gray-100 transition">
-              Change Password
-            </button>
-           </Link>
+            <Link to="/change-password" className="w-full sm:w-auto">
+              <button className="w-full px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition">
+                Change Password
+              </button>
+            </Link>
+
           </div>
+
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
 
 
 

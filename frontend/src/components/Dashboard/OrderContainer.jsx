@@ -194,95 +194,208 @@
 //     </div>
 //   );
 // }
+
+
+// import React, { useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { placeOrder } from "../../services/orderApi";
+// import { toast } from "react-hot-toast";
+// import { useNavigate } from "react-router-dom";
+
+// export default function OrderContainer() {
+//   const { menuItem } = useSelector((state) => state.menu);
+//   const { token } = useSelector((state) => state.auth);
+//   const dispatch = useDispatch();
+// const navigate = useNavigate();
+
+//   const [quantity, setQuantity] = useState(1);
+//   const [loading, setLoading] = useState(false);
+
+//   if (!menuItem) {
+//     return <h2>No menu item selected</h2>;
+//   }
+
+//   // async function handleOrder() {
+//   //   try {
+//   //     setLoading(true);
+
+//   //     const orderData = {
+//   //       items: [
+//   //         {
+//   //           menuItem: menuItem._id,
+//   //           quantity: Number(quantity),
+//   //         },
+//   //       ],
+//   //     };
+
+//   //     await dispatch(placeOrder(orderData, token));
+
+//   //     toast.success("Order Created Successfully!");
+//   //     navigate("/dashboard/orders");
+
+//   //   } catch (error) {
+//   //     console.log(error);
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // }
+
+//   async function handleOrder() {
+//   try {
+//     setLoading(true);
+
+//     const orderData = {
+//       items: [
+//         {
+//           menuItem: menuItem._id,
+//           quantity: Number(quantity),
+//         },
+//       ],
+//     };
+
+//     const result = await dispatch(placeOrder(orderData, token));
+
+//     if (result) {
+//       await dispatch(getMyOrders(token));   // 🔥 force refresh
+//       toast.success("Order Created Successfully!");
+//       navigate("/dashboard/orders");
+//     }
+
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setLoading(false);
+//   }
+// }
+
+//   return (
+//     <div className="min-h-screen flex justify-center items-center bg-gray-100 p-6">
+//       <div className="bg-white shadow-xl rounded-xl p-6 w-full max-w-md">
+
+//         <img
+//           src={menuItem.image}
+//           alt={menuItem.name}
+//           className="w-full h-48 object-cover rounded-lg"
+//         />
+
+//         <h2 className="text-2xl font-bold mt-4">{menuItem.name}</h2>
+//         <p className="text-gray-600 mt-2">{menuItem.description}</p>
+
+//         <p className="text-xl font-semibold mt-3 text-green-600">
+//           ₹{menuItem.price}
+//         </p>
+
+//         <div className="mt-4">
+//           <label className="block text-sm font-medium mb-1">
+//             Quantity
+//           </label>
+//           <input
+//             type="number"
+//             min="1"
+//             value={quantity}
+//             onChange={(e) => setQuantity(e.target.value)}
+//             className="w-full border rounded-lg px-3 py-2"
+//           />
+//         </div>
+
+//         <p className="mt-3 font-semibold">
+//           Total: ₹{menuItem.price * quantity}
+//         </p>
+
+//         <button
+//           onClick={handleOrder}
+//           disabled={loading}
+//           className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-semibold disabled:opacity-50"
+//         >
+//           {loading ? "Placing Order..." : "Place Order"}
+//         </button>
+
+//       </div>
+//     </div>
+//   );
+// }
+
+
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { placeOrder } from "../../services/orderApi";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { getMyOrders } from "../../services/orderApi";
 
 export default function OrderContainer() {
   const { menuItem } = useSelector((state) => state.menu);
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
 
   if (!menuItem) {
-    return <h2>No menu item selected</h2>;
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 text-center">
+        <h2 className="text-lg md:text-xl font-semibold">
+          No menu item selected
+        </h2>
+      </div>
+    );
   }
-
-  // async function handleOrder() {
-  //   try {
-  //     setLoading(true);
-
-  //     const orderData = {
-  //       items: [
-  //         {
-  //           menuItem: menuItem._id,
-  //           quantity: Number(quantity),
-  //         },
-  //       ],
-  //     };
-
-  //     await dispatch(placeOrder(orderData, token));
-
-  //     toast.success("Order Created Successfully!");
-  //     navigate("/dashboard/orders");
-
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
 
   async function handleOrder() {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const orderData = {
-      items: [
-        {
-          menuItem: menuItem._id,
-          quantity: Number(quantity),
-        },
-      ],
-    };
+      const orderData = {
+        items: [
+          {
+            menuItem: menuItem._id,
+            quantity: Number(quantity),
+          },
+        ],
+      };
 
-    const result = await dispatch(placeOrder(orderData, token));
+      const result = await dispatch(placeOrder(orderData, token));
 
-    if (result) {
-      await dispatch(getMyOrders(token));   // 🔥 force refresh
-      toast.success("Order Created Successfully!");
-      navigate("/dashboard/orders");
+      if (result) {
+        await dispatch(getMyOrders(token));
+        toast.success("Order Created Successfully!");
+        navigate("/dashboard/orders");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
   }
-}
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 p-6">
-      <div className="bg-white shadow-xl rounded-xl p-6 w-full max-w-md">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4 py-8">
+      <div className="bg-white shadow-xl rounded-2xl p-5 sm:p-6 w-full max-w-md">
 
+        {/* Image */}
         <img
           src={menuItem.image}
           alt={menuItem.name}
-          className="w-full h-48 object-cover rounded-lg"
+          className="w-full h-40 sm:h-48 object-cover rounded-xl"
         />
 
-        <h2 className="text-2xl font-bold mt-4">{menuItem.name}</h2>
-        <p className="text-gray-600 mt-2">{menuItem.description}</p>
+        {/* Name */}
+        <h2 className="text-xl sm:text-2xl font-bold mt-4">
+          {menuItem.name}
+        </h2>
 
-        <p className="text-xl font-semibold mt-3 text-green-600">
+        {/* Description */}
+        <p className="text-gray-600 mt-2 text-sm sm:text-base">
+          {menuItem.description}
+        </p>
+
+        {/* Price */}
+        <p className="text-lg sm:text-xl font-semibold mt-3 text-green-600">
           ₹{menuItem.price}
         </p>
 
+        {/* Quantity */}
         <div className="mt-4">
           <label className="block text-sm font-medium mb-1">
             Quantity
@@ -292,22 +405,23 @@ const navigate = useNavigate();
             min="1"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-400 outline-none"
           />
         </div>
 
-        <p className="mt-3 font-semibold">
+        {/* Total */}
+        <p className="mt-3 font-semibold text-base sm:text-lg">
           Total: ₹{menuItem.price * quantity}
         </p>
 
+        {/* Button */}
         <button
           onClick={handleOrder}
           disabled={loading}
-          className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-semibold disabled:opacity-50"
+          className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition duration-300 disabled:opacity-50"
         >
           {loading ? "Placing Order..." : "Place Order"}
         </button>
-
       </div>
     </div>
   );
