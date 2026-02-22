@@ -27,7 +27,7 @@ function App() {
   return (
 
      
-     <div className='w-full  h-[100vh] bg-black text-white'>
+    <div className='w-full min-h-screen bg-black text-white pt-16'>
          <Navbar />
          
          <Routes>

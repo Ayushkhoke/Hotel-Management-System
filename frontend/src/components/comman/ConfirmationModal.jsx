@@ -385,7 +385,7 @@ export default function ConfirmationModal({ tableId, closeModal }) {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
       <form
         onSubmit={submitHandler}
-        className="bg-white p-6 rounded-lg w-[350px] space-y-4"
+        className="bg-white p-6 rounded-lg w-full max-w-sm space-y-4"
       >
         <h2 className="text-lg font-semibold text-center">
           Confirm Booking

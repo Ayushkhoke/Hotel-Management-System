@@ -118,7 +118,7 @@ const navigate=useNavigate();
 
   return (
     <div className="fixed inset-0 bg-black text-black bg-opacity-40 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg w-[400px]">
+    <div className="bg-white p-6 rounded-lg w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">Book Table</h2>
 
         <form onSubmit={handleBooking} className="space-y-4">

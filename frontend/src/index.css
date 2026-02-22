@@ -71,3 +71,43 @@ button:focus-visible {
 .input {
   @apply w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500;
 }
+
+/* Responsive helpers */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Small device tweaks */
+@media (max-width: 640px) {
+  /* Reduce large paddings/margins for mobile */
+  .p-8 { padding: 1.25rem !important; }
+  .p-6 { padding: 1rem !important; }
+  .px-10 { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+  /* Hide elements not needed on mobile */
+  .hide-mobile { display: none !important; }
+
+  /* Make fixed-height cards adapt */
+  .h-52 { height: 14rem !important; }
+  .h-44 { height: 12rem !important; }
+}
+
+/* Medium devices tweaks */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .px-10 { padding-left: 2rem !important; padding-right: 2rem !important; }
+}
+
+/* Utility: ensure main content clears fixed header */
+.site-main {
+  padding-top: 4rem; /* adjust if header height changes */
+}
