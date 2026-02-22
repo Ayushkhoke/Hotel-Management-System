@@ -1,7 +1,7 @@
-const BASE_URL="http://localhost:4000/api/v1"
+// const BASE_URL="http://localhost:4000/api/v1"
 
 
-
+const BASE_URL="https://hotel-management-system-1-5e51.onrender.com/api/v1"
 export const auth={
     SIGNUP_API:BASE_URL+"/auth/signup",
     LOGIN_API:BASE_URL+"/auth/login",
