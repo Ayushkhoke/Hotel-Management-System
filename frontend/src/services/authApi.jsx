@@ -48,8 +48,53 @@ export function signupUser(formData, navigate) {
       }
 
       //
-      toast.success("Signup successful! Please verify your email");
+      toast.success("Signup successful! Redirecting to your profile...");
+
+      // Populate user state immediately so profile renders without waiting for login
+      try {
+        const createdUser = res.data.data;
+        const userImage = createdUser.image ? createdUser.image : `https://api.dicebear.com/5.x/initials/svg?seed=${createdUser.firstname}`;
+        dispatch(setUser({ ...createdUser, image: userImage }));
+        // persist user locally (no token yet)
+        localStorage.setItem("user", JSON.stringify(createdUser));
+      } catch (e) {
+        // ignore
+      }
+
+      // Navigate immediately to profile page (user experience requirement)
       navigate("/dashboard/my-profile");
+
+      // in background, try to login the user so token/state is set if possible
+      try {
+        let email;
+        let password;
+        if (formData instanceof FormData) {
+          email = formData.get("email");
+          password = formData.get("password");
+        } else {
+          email = formData.email;
+          password = formData.password;
+        }
+
+        const loginRes = await apiConnector("POST", auth.LOGIN_API, { email, password });
+        if (loginRes.data.success) {
+          const token = loginRes.data.token;
+          dispatch(setToken(token));
+          const user = loginRes.data.user;
+          const userImage = user.image ? user.image : `https://api.dicebear.com/5.x/initials/svg?seed=${user.firstname}`;
+          dispatch(setUser({ ...user, image: userImage }));
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          toast.success("Logged in successfully");
+          navigate("/dashboard/my-profile");
+        } else {
+          // if login not successful, fallback to verify email page
+          navigate("/verifyemail");
+        }
+      } catch (loginError) {
+        // fallback when immediate login fails (e.g., server requires verification)
+        navigate("/verifyemail");
+      }
     
 
     } catch (error) {
