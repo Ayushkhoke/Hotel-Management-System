@@ -40,14 +40,22 @@
 
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Dashboard/Slidebar";
 import ProfileDropdown from "../components/comman/ProfileDropdown";
 import { Menu, X } from "lucide-react";
 
 export default function DashboardLayout() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    if (typeof window !== "undefined") return window.innerWidth >= 768;
+    return false;
+  });
+
+  // Ensure sidebar is visible when mounting on larger screens
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 768) setOpen(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -81,13 +89,7 @@ export default function DashboardLayout() {
         )}
 
         {/* Sidebar */}
-        <div
-          className={`fixed md:static top-0 left-0 h-full z-50
-                      transform ${open ? "translate-x-0" : "-translate-x-full"}
-                      md:translate-x-0 transition-transform duration-300`}
-        >
-          <Sidebar open={open} setOpen={setOpen} />
-        </div>
+        <Sidebar open={open} setOpen={setOpen} />
 
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">

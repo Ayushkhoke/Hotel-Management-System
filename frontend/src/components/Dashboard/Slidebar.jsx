@@ -128,7 +128,7 @@
 //   );
 // }
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SIDEBAR_LINKS } from "../../data/sidebarLinks";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -137,18 +137,32 @@ export default function Sidebar({ open, setOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // detect mobile viewport so we can always show labels on small screens
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    function onResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
+
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   return (
     <>
       {/* ===== Sidebar ===== */}
       <aside
-        className={`fixed md:static top-0 left-0 z-50 h-screen bg-black text-white transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 bg-black text-white transform transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 w-64 ${open ? "md:w-64" : "md:w-20"} shadow-2xl overflow-y-auto`}
+        } md:translate-x-0 ${open ? "w-64 md:w-64" : "w-64 md:w-20"} shadow-2xl overflow-y-auto`}
+        aria-hidden={!open && !isMobile}
       >
         {/* ===== Header ===== */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          {/* Title (show on mobile always; on desktop when open) */}
-          <h1 className={`text-lg font-semibold ${open ? "block" : "hidden md:block"}`}>
+          {/* Title: show only when sidebar is open; prevent wrapping */}
+          <h1 className={`text-lg font-semibold whitespace-nowrap ${open ? "block" : "hidden"}`}>
             Hotel Admin
           </h1>
 
@@ -180,6 +194,7 @@ export default function Sidebar({ open, setOpen }) {
           {SIDEBAR_LINKS.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
+            const showLabel = isMobile || open; // always show on mobile
 
             return (
               <div
@@ -188,14 +203,22 @@ export default function Sidebar({ open, setOpen }) {
                   if (item.path) navigate(item.path);
                   setOpen(false); // auto close on mobile
                 }}
-                className={`flex items-center gap-4 p-4 md:p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                className={`rounded-lg cursor-pointer transition-all duration-200 ${
                   active ? "bg-yellow-500 text-black font-semibold" : "hover:bg-gray-800"
-                }`}
+                } `}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && (item.path ? navigate(item.path) : null)}
               >
-                <Icon size={20} />
+                <div
+                  className={`flex items-center ${
+                    showLabel ? "gap-4 px-4 py-3 justify-start" : "gap-0 px-3 py-3 justify-center"
+                  }`}
+                >
+                  <Icon size={20} />
 
-                {/* Show text: always on mobile, on desktop only when `open` */}
-                <span className={`text-sm inline ${open ? "md:inline" : "md:hidden"}`}>{item.name}</span>
+                  {showLabel && <span className="text-sm ml-2">{item.name}</span>}
+                </div>
               </div>
             );
           })}
