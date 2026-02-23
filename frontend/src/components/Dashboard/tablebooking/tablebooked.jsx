@@ -34,7 +34,6 @@
 //     </div>
 //   );
 // }
-
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMyTableBookings } from "../../../services/tablebookingApi";
@@ -54,12 +53,10 @@ export default function TableBooked() {
     dispatch(getMyTableBookings(token));
   }, [token, dispatch]);
 
-  // 🔥 Handle Payment
   const handlePayment = (booking) => {
     buyTablePayment(token, user, booking, dispatch);
   };
 
-  // 🔥 Handle Cancel
   const handleCancel = async (bookingId) => {
     try {
       await apiConnector(
@@ -72,7 +69,6 @@ export default function TableBooked() {
       );
 
       toast.success("Booking cancelled successfully");
-
       dispatch(getMyTableBookings(token));
 
     } catch (error) {
@@ -81,78 +77,104 @@ export default function TableBooked() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-black p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 px-4 sm:px-8 py-10">
 
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        My Table Bookings
-      </h1>
+      <div className="max-w-6xl mx-auto mb-10 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          🍽 My Table Bookings
+        </h1>
+        <p className="text-gray-500 mt-2 text-sm sm:text-base">
+          Manage your reservations and payments easily
+        </p>
+      </div>
 
       {/* Empty State */}
       {tablebookings?.length === 0 && (
-        <div className="text-center text-gray-500 text-lg">
-          No bookings found.
+        <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-md text-center">
+          <p className="text-gray-600 text-lg">No bookings found 😔</p>
         </div>
       )}
 
       {/* Booking Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {tablebookings?.map((booking) => (
           <div
             key={booking._id}
-            className="bg-white rounded-xl shadow-md p-6 border hover:shadow-xl transition duration-300"
+            className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 border border-gray-100 flex flex-col justify-between"
           >
-            <p><strong>Table:</strong> {booking.table?.tableNumber}</p>
-            <p><strong>Date:</strong> {new Date(booking.date).toLocaleDateString()}</p>
-            <p><strong>Time Slot:</strong> {booking.timeSlot}</p>
-            <p><strong>Guests:</strong> {booking.guests}</p>
-            <p><strong>Amount:</strong> ₹{booking.amount}</p>
+            {/* Booking Info */}
+            <div className="space-y-2 text-sm sm:text-base">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Table #{booking.table?.tableNumber}
+              </h2>
 
-            {/* Status Badge */}
-            <p className="mt-3">
-              <strong>Status:</strong>{" "}
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  booking.status === "Confirmed"
-                    ? "bg-green-100 text-green-700"
-                    : booking.status === "Pending"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {booking.status}
-              </span>
-            </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Date:</span>{" "}
+                {new Date(booking.date).toLocaleDateString()}
+              </p>
 
-            {/* Buttons Logic */}
-            <div className="mt-5">
+              <p className="text-gray-600">
+                <span className="font-medium">Time Slot:</span>{" "}
+                {booking.timeSlot}
+              </p>
 
-              {/* Pending → Only Pay */}
-              {
-                <button
-                  onClick={() => handlePayment(booking)}
-                  className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+              <p className="text-gray-600">
+                <span className="font-medium">Guests:</span>{" "}
+                {booking.guests}
+              </p>
+
+              <p className="text-xl font-bold text-green-600 mt-2">
+                ₹{booking.amount}
+              </p>
+
+              {/* Status Badge */}
+              <div className="mt-3">
+                <span
+                  className={`inline-block px-4 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                    booking.paymentStatus === "paid" || booking.status === "Confirmed"
+                      ? "bg-green-100 text-green-700"
+                      : booking.paymentStatus === "pending" || booking.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
                 >
-                  Pay Now
-                </button>
-              }
-
-              {/* Confirmed → Only Cancel */}
-              {
-                <button
-                  onClick={() => handleCancel(booking._id)}
-                  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
-                >
-                  Cancel Booking
-                </button>
-              }
-
+                  {booking.paymentStatus === "paid" || booking.status === "Confirmed"
+                    ? "Confirmed ✅"
+                    : booking.paymentStatus === "pending" || booking.status === "Pending"
+                    ? "Pending ⏳"
+                    : booking.status || "Unknown"}
+                </span>
+              </div>
             </div>
 
+            {/* Buttons */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              
+              {(booking.paymentStatus !== "paid") &&
+               booking.status !== "Cancelled" && (
+                <button
+                  onClick={() => handlePayment(booking)}
+                  className="w-full sm:w-auto flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl transition font-medium shadow-sm"
+                >
+                  💳 Pay Now
+                </button>
+              )}
+
+              {booking.status !== "Cancelled" &&
+               booking.paymentStatus !== "paid" && (
+                <button
+                  onClick={() => handleCancel(booking._id)}
+                  className="w-full sm:w-auto flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-xl transition font-medium shadow-sm"
+                >
+                  ❌ Cancel
+                </button>
+              )}
+
+            </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }

@@ -53,22 +53,18 @@ export const bookTable = (data, token) => {
       );
 
       if (!response?.data?.success) {
-        throw new Error(response?.data?.message);
+        throw new Error(response?.data?.message || "Booking failed");
       }
 
       dispatch(setTablebooked(response.data.data));
-
-
       toast.success("Table booked successfully");
 
-      return  response.data.data ;  // 🔥 IMPORTANT
+      return response.data.data;
 
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message ||
-        error.message ||
-        "Booking failed"
-      );
+      const errorMsg = error?.response?.data?.message || error.message || "Booking failed";
+      toast.error(errorMsg);
+      throw new Error(errorMsg); // Properly throw so the caller knows it failed
     }
   };
 };
@@ -78,32 +74,29 @@ export const bookTable = (data, token) => {
 export const getMyTableBookings = (token) => {
   return async (dispatch) => {
     try {
-  const response = await apiConnector(
-  "GET",
-  tableBooking.GET_TABLEBOOKING_API,
-  {},
-  {
-    Authorization: `Bearer ${token}`,
-  }
-);
+      const response = await apiConnector(
+        "GET",
+        tableBooking.GET_TABLEBOOKING_API,
+        {},
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
 
       if (!response?.data?.success) {
-        throw new Error(response?.data?.message);
+        throw new Error(response?.data?.message || "Failed to fetch bookings");
       }
 
       console.log("GET BOOKINGS RESPONSE:", response.data.data);
 
-      dispatch(setTablebookings(response.data.data));
+      dispatch(setTablebookings(response.data.data || []));
 
       return response.data.data;
 
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message ||
-        error.message ||
-        "Unable to fetch bookings"
-      );
-      return null;
+      const errorMsg = error?.response?.data?.message || error.message || "Unable to fetch bookings";
+      toast.error(errorMsg);
+      return [];
     }
   };
 };

@@ -1439,11 +1439,13 @@ import {
 import { setTable, setEditTable } from "../../slices/tableSlice";
 import Upload from "./Upload";
 import TableBooking from "../Dashboard/tablebooking/tablebooking";
+import { useNavigate } from "react-router-dom";
 
 export default function Tablecontainer() {
   const { token, user } = useSelector((state) => state.auth);
   const { tables, table, edittable } = useSelector((state) => state.table);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState(null);
@@ -1461,8 +1463,10 @@ export default function Tablecontainer() {
   }, [dispatch, token]);
 
   function handleBookTable(tableId) {
-    setSelectedTableId(tableId);
-    setShowBookingModal(true);
+    const selectedTable = tables.find(t => t._id === tableId);
+    if (selectedTable) {
+      navigate("/dashboard/tablebooking", { state: { table: selectedTable } });
+    }
   }
 
   function changehandler(e) {
@@ -1598,29 +1602,22 @@ export default function Tablecontainer() {
                     {t.status}
                   </span>
 
-                  {user?.accountType === "User" && (
+                  {/* Book/Edit Button */}
+                  <div className="pt-3">
                     <button
-                      onClick={() => handleBookTable(t._id)}
-                      disabled={t.status !== "available"}
-                      className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r
-                                 from-yellow-500 to-amber-600
-                                 rounded-lg font-semibold
-                                 hover:scale-105 transition"
+                      onClick={() => {
+                        if (user?.accountType === "Admin") {
+                          editHandler(t);
+                        } else {
+                          handleBookTable(t._id);
+                        }
+                      }}
+                      disabled={user?.accountType !== "Admin" && t.status !== "available"}
+                      className="w-full px-4 py-2 bg-yellow-500 text-black rounded-lg hover:opacity-90 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Reserve Table
+                      {user?.accountType === "Admin" ? "Edit" : "Reserve Table"}
                     </button>
-                  )}
-
-                  {user?.accountType === "Admin" && (
-                    <button
-                      onClick={() => editHandler(t)}
-                      className="w-full sm:w-auto px-4 py-2 bg-blue-600
-                                 rounded-lg hover:bg-blue-700
-                                 transition text-sm"
-                    >
-                      Edit
-                    </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1695,12 +1692,6 @@ export default function Tablecontainer() {
         )}
       </div>
 
-      {showBookingModal && (
-        <TableBooking
-          tableId={selectedTableId}
-          closeModal={() => setShowBookingModal(false)}
-        />
-      )}
     </div>
   );
 }

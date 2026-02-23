@@ -1598,6 +1598,7 @@
 
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   createRoom,
@@ -1613,6 +1614,7 @@ export default function RoomContainer() {
   const { token, user } = useSelector((state) => state.auth);
   const { rooms, room, editRoom } = useSelector((state) => state.room);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [searchRoomNo, setSearchRoomNo] = useState("");
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -1755,6 +1757,22 @@ export default function RoomContainer() {
                   >
                     {r.isAvailable ? "Available" : "Booked"}
                   </span>
+
+                  {/* When a regular user clicks a room card, go to booking page */}
+                  <div className="pt-3">
+                    <button
+                      onClick={() => {
+                        if (user?.accountType === "Admin") {
+                          editHandler(r);
+                        } else {
+                          navigate("/dashboard/roombooking", { state: { room: r } });
+                        }
+                      }}
+                      className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:opacity-90 transition text-sm"
+                    >
+                      {user?.accountType === "Admin" ? "Edit" : "Book Room"}
+                    </button>
+                  </div>
 
                   {user?.accountType === "Admin" && (
                     <div className="flex flex-col sm:flex-row gap-3 pt-3">

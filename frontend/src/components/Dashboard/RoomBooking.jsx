@@ -46,19 +46,21 @@ export default function RoomBooking({ room, onClose }) {
 
       if (booking) {
         toast.success("Room booking created 🎉");
-        navigate("/dashboard/roombooked")
-        onClose(); // close modal only if success
+        if (onClose) onClose();
+        navigate("/dashboard/roombooked");
+      } else {
+        toast.error("Failed to book room - please try again");
       }
 
     } catch (error) {
-      toast.error("Booking failed");
+      toast.error("Booking failed - " + (error?.message || "Please try again"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 text-black">
       <div className="bg-white w-96 p-6 rounded-lg shadow-lg">
         <h2 className="text-xl font-semibold mb-4">
           Book Room {room.roomNumber}

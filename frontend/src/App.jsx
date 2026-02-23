@@ -18,6 +18,8 @@ import RoomBooked from './components/Dashboard/RoomBooked.jsx'
 import Tablebooked from './components/Dashboard/tablebooking/tablebooked.jsx'
 import Setting from './components/Dashboard/Setting.jsx'
 import ChangePassword from './pages/ChangePassword.jsx'
+import RoomBookingPage from './components/Dashboard/RoomBookingPage.jsx'
+import TableBookingPage from './components/Dashboard/TableBookingPage.jsx'
 // import AiChat from './pages/AiComponent.jsx'
 // import settings from './components/Dashboard/settings.jsx'
  import Tablecontainer from './components/Dashboard/Tablecontainer.jsx' 
@@ -50,7 +52,9 @@ function App() {
 </Route>
 
          <Route path="/dashboard/roombooked"  element={<RoomBooked/>}/>
+         <Route path="/dashboard/roombooking" element={<RoomBookingPage/>} />
          <Route path="/dashboard/tablebooked"  element={<Tablebooked/>}/>
+         <Route path="/dashboard/tablebooking" element={<TableBookingPage/>} />
          <Route path="/change-password"  element={<ChangePassword/>}/>
          {/* <Route path="/Aichat"  element={<AiChat/>}/> */}
          </Routes>

@@ -80,12 +80,13 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { bookTable } from "../../../services/tablebookingApi";
 
 export default function TableBooking({ tableId, closeModal }) {
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-const navigate=useNavigate();
+  const navigate = useNavigate();
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
   const [guests, setGuests] = useState("");
@@ -94,7 +95,10 @@ const navigate=useNavigate();
   const handleBooking = async (e) => {
     e.preventDefault();
 
-    if (!date || !timeSlot || !guests) return;
+    if (!date || !timeSlot || !guests) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
     const bookingData = {
       table_id: tableId,
@@ -103,16 +107,22 @@ const navigate=useNavigate();
       guests: Number(guests),
     };
 
-    console.log("Booking Data:", bookingData);
-
     setLoading(true);
 
-    const result = await dispatch(bookTable(bookingData, token));
-    navigate('/dashboard/tablebooked');
-    setLoading(false);
-
-    if (result) {
-      closeModal();
+    try {
+      const result = await dispatch(bookTable(bookingData, token));
+      
+      if (result) {
+        toast.success("Table booked successfully! 🎉");
+        if (closeModal) closeModal();
+        navigate('/dashboard/tablebooked');
+      } else {
+        toast.error("Failed to book table - please try again");
+      }
+    } catch (err) {
+      toast.error("Booking error - please try again");
+    } finally {
+      setLoading(false);
     }
   };
 

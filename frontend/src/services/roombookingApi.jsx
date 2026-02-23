@@ -20,17 +20,16 @@ export async function bookRoom(data, token) {
     );
 
     if (!res.data.success) {
-      throw new Error(res.data.message);
+      throw new Error(res.data.message || "Booking failed");
     }
 
     toast.success("Successfully booked the room 🎉");
 
-    return res.data.booking // ✅ correct according to backend
+    return res.data.booking; // ✅ correct according to backend
   } catch (error) {
-    toast.error(
-      error.response?.data?.message ||
-        "Booking failed"
-    );
+    const errorMsg = error.response?.data?.message || error.message || "Booking failed";
+    toast.error(errorMsg);
+    throw new Error(errorMsg); // Properly throw so caller knows it failed
   }
 }
 
