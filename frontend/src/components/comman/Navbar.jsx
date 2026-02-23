@@ -103,11 +103,17 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* MOBILE MENU BUTTON / PROFILE */}
         <div className="md:hidden">
-          <button onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-          </button>
+          {token ? (
+            <div className="flex items-center">
+              <ProfileDropdown />
+            </div>
+          ) : (
+            <button onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          )}
         </div>
       </div>
 

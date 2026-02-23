@@ -128,7 +128,6 @@
 //   );
 // }
 
-
 import React from "react";
 import { SIDEBAR_LINKS } from "../../data/sidebarLinks";
 import { ChevronLeft } from "lucide-react";
@@ -140,29 +139,33 @@ export default function Sidebar({ open, setOpen }) {
 
   return (
     <>
-      {/* Overlay for Mobile */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 md:hidden z-40"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* ===== Sidebar ===== */}
       <aside
-        className={`fixed md:static top-0 left-0 z-50 h-screen bg-black text-white
-        transition-all duration-300 ease-in-out
-        ${open ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-20"}
-        shadow-2xl`}
+        className={`fixed md:static top-0 left-0 z-50 h-screen bg-black text-white transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 w-64 ${open ? "md:w-64" : "md:w-20"} shadow-2xl overflow-y-auto`}
       >
-        {/* Header */}
+        {/* ===== Header ===== */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          {open && <h1 className="text-lg font-semibold">Hotel Admin</h1>}
+          {/* Title (show on mobile always; on desktop when open) */}
+          <h1 className={`text-lg font-semibold ${open ? "block" : "hidden md:block"}`}>
+            Hotel Admin
+          </h1>
+
+          {/* Mobile Close Button (visible only on small screens when sidebar is open) */}
+          <button
+            onClick={() => setOpen(false)}
+            className="md:hidden text-white bg-black/20 px-2 py-1 rounded"
+            aria-label="Close sidebar"
+          >
+            ✕
+          </button>
 
           {/* Desktop Collapse Button */}
           <button
             onClick={() => setOpen(!open)}
             className="hidden md:block"
+            aria-label="Toggle sidebar"
           >
             <ChevronLeft
               className={`transition-transform duration-300 ${
@@ -172,7 +175,7 @@ export default function Sidebar({ open, setOpen }) {
           </button>
         </div>
 
-        {/* Navigation */}
+        {/* ===== Navigation ===== */}
         <nav className="p-4 space-y-2">
           {SIDEBAR_LINKS.map((item) => {
             const Icon = item.icon;
@@ -183,18 +186,16 @@ export default function Sidebar({ open, setOpen }) {
                 key={item.id}
                 onClick={() => {
                   if (item.path) navigate(item.path);
-                  setOpen(false);
+                  setOpen(false); // auto close on mobile
                 }}
-                className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all duration-200
-                  ${
-                    active
-                      ? "bg-yellow-500 text-black font-semibold"
-                      : "hover:bg-gray-800"
-                  }
-                `}
+                className={`flex items-center gap-4 p-4 md:p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                  active ? "bg-yellow-500 text-black font-semibold" : "hover:bg-gray-800"
+                }`}
               >
                 <Icon size={20} />
-                {open && <span className="text-sm">{item.name}</span>}
+
+                {/* Show text: always on mobile, on desktop only when `open` */}
+                <span className={`text-sm inline ${open ? "md:inline" : "md:hidden"}`}>{item.name}</span>
               </div>
             );
           })}

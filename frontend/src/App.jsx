@@ -54,7 +54,7 @@ function App() {
          <Route path="/change-password"  element={<ChangePassword/>}/>
          {/* <Route path="/Aichat"  element={<AiChat/>}/> */}
          </Routes>
-         <h1>App Component</h1>
+        
       </div>
     
       

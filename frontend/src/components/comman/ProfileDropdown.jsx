@@ -50,23 +50,26 @@
 // }
 
 import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/authApi.jsx";
 import { useDispatch } from "react-redux";
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const dropdownElRef = useRef(null);
 
   // Close when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      const wrapperContains = wrapperRef.current && wrapperRef.current.contains(event.target);
+      const dropdownContains = dropdownElRef.current && dropdownElRef.current.contains(event.target);
+
+      if (!wrapperContains && !dropdownContains) {
         setOpen(false);
       }
     }
@@ -74,6 +77,17 @@ export default function ProfileDropdown() {
     document.addEventListener("mousedown", handleClickOutside);
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Track mobile breakpoint so we can position the dropdown outside header flow
+  useEffect(() => {
+    function onResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
+
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const handleDashboard = () => {
@@ -86,8 +100,20 @@ export default function ProfileDropdown() {
     setOpen(false);
   };
 
+  // compute portal position for dropdown
+  const [dropdownStyle, setDropdownStyle] = useState({});
+
+  useEffect(() => {
+    if (open && wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const left = rect.right - 192; // dropdown width ~192px (w-48)
+      const top = rect.bottom + 8; // small gap
+      setDropdownStyle({ position: "absolute", left: `${left}px`, top: `${top}px` });
+    }
+  }, [open, isMobile]);
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={wrapperRef}>
       {/* Profile Avatar */}
       <img
         src="https://i.pravatar.cc/150?img=12"
@@ -98,30 +124,30 @@ export default function ProfileDropdown() {
                    transition duration-200"
       />
 
-      {/* Dropdown */}
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-3 w-48
-                     bg-white rounded-xl shadow-xl
-                     border z-[999]"
-        >
-          <button
-            onClick={handleDashboard}
-            className="w-full text-left px-4 py-2
-                       text-black hover:bg-gray-100 transition"
+      {/* Dropdown (portal to body to avoid clipping) */}
+      {open &&
+        ReactDOM.createPortal(
+          <div
+            ref={dropdownElRef}
+            style={isMobile ? {} : dropdownStyle}
+            className={`${isMobile ? "fixed right-4 top-16 mt-0 w-48" : "w-48"} bg-white rounded-md shadow-xl z-[999]`} 
           >
-            🏠 Dashboard
-          </button>
+            <button
+              onClick={handleDashboard}
+              className="w-full text-left px-4 py-2 text-black hover:bg-gray-100 transition"
+            >
+              🏠 Dashboard
+            </button>
 
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2
-                       text-red-500 hover:bg-red-50 transition"
-          >
-            🚪 Logout
-          </button>
-        </div>
-      )}
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition"
+            >
+              🚪 Logout
+            </button>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
