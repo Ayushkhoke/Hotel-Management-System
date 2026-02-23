@@ -107,7 +107,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://hotel-management-system-silk-sigma.vercel.app"
+      "https://hotel-management-system-silk-sigma.vercel.app/"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
