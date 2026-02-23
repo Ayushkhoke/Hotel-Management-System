@@ -92,7 +92,9 @@ export default function DashboardLayout() {
         <Sidebar open={open} setOpen={setOpen} />
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+        <main className={`flex-1 p-4 md:p-6 overflow-y-auto transition-all duration-300 ${
+          open ? "md:ml-64" : "md:ml-20"
+        }`}>
           <Outlet />
         </main>
 
