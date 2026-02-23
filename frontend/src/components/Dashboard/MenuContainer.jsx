@@ -674,7 +674,266 @@
 //     </div>
 //   );
 // }
-import React, { useEffect, useState } from "react";
+
+// import React, { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { createMenu, getAllMenus, deleteMenu } from "../../services/menuApi";
+// import { setMenuItem } from "../../slices/menuSlice";
+// import { useNavigate } from "react-router-dom";
+// import Upload from "./Upload";
+
+// export default function MenuContainer() {
+//   const dispatch = useDispatch();
+//   const { token, user } = useSelector((state) => state.auth);
+//   const { menu, menuItem } = useSelector((state) => state.menu);
+//   const navigate = useNavigate();
+
+//   const [formdata, setFormdata] = useState({
+//     name: "",
+//     price: "",
+//     description: "",
+//     image: null,
+//   });
+
+//   useEffect(() => {
+//     if (token) dispatch(getAllMenus(token));
+//   }, [dispatch, token]);
+
+//   function submitHandler(e) {
+//     e.preventDefault();
+//     const data = new FormData();
+
+//     Object.keys(formdata).forEach((key) => {
+//       if (formdata[key] !== null) {
+//         data.append(key, formdata[key]);
+//       }
+//     });
+
+//     dispatch(createMenu(data, token));
+
+//     setFormdata({
+//       name: "",
+//       price: "",
+//       description: "",
+//       image: null,
+//     });
+//   }
+
+//   function deleteHandler(menuId) {
+//     dispatch(deleteMenu(menuId, token));
+//   }
+
+//   function orderhandler(item) {
+//     dispatch(setMenuItem(item));
+//     navigate("/dashboard/order");
+//   }
+
+//   return (
+//     <div
+//       className="min-h-screen bg-cover bg-center bg-fixed text-white
+//                  px-4 sm:px-6 lg:px-10
+//                  py-8 sm:py-12 md:py-16 overflow-x-hidden"
+//       style={{
+//         backgroundImage:
+//           "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80')",
+//       }}
+//     >
+//       {/* HEADER */}
+//       <div className="text-center mb-8 sm:mb-12 md:mb-16">
+//         <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-yellow-400">
+//           Royal Gourmet Menu
+//         </h1>
+//         <p className="text-gray-300 mt-2 text-xs sm:text-sm md:text-lg">
+//           Premium Cuisine • Luxury Dining • Signature Experience
+//         </p>
+//       </div>
+
+//       {/* MAIN GRID */}
+//       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-10">
+
+//         {/* MENU LIST */}
+//         <div className="xl:col-span-2 space-y-5 sm:space-y-6 md:space-y-8 order-2 xl:order-1">
+//           {menu?.map((m) => (
+//             <div
+//               key={m._id}
+//               onClick={() => orderhandler(m)}
+//               className="group bg-white/10 backdrop-blur-lg
+//                          border border-white/20
+//                          rounded-2xl md:rounded-3xl
+//                          overflow-hidden shadow-xl
+//                          hover:-translate-y-2
+//                          transition duration-500 cursor-pointer"
+//             >
+//               <div className="grid grid-cols-1 md:grid-cols-2">
+
+//                 {m.image && (
+//                   <div className="overflow-hidden">
+//                     <img
+//                       src={m.image}
+//                       alt={m.name}
+//                       className="w-full h-40 sm:h-48 md:h-60 object-cover
+//                                  group-hover:scale-110 transition duration-700"
+//                     />
+//                   </div>
+//                 )}
+
+//                 <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-center space-y-2 sm:space-y-3 md:space-y-4">
+//                   <h2 className="text-lg sm:text-xl md:text-3xl font-semibold text-yellow-400">
+//                     {m.name}
+//                   </h2>
+
+//                   <p className="text-gray-300 text-xs sm:text-sm md:text-base">
+//                     {m.description}
+//                   </p>
+
+//                   <p className="text-base sm:text-lg md:text-2xl text-green-400 font-semibold">
+//                     ₹{m.price}
+//                   </p>
+
+//                   {user?.accountType === "Admin" && (
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         deleteHandler(m._id);
+//                       }}
+//                       className="w-full sm:w-auto px-4 py-2
+//                                  bg-red-600 rounded-lg
+//                                  hover:bg-red-700 transition text-xs sm:text-sm"
+//                     >
+//                       Delete
+//                     </button>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+
+//         {/* CART SECTION */}
+//         <div className="order-1 xl:order-2">
+//           <div
+//             className="bg-white/10 backdrop-blur-xl
+//                        border border-yellow-500/30
+//                        p-4 sm:p-6 md:p-8
+//                        rounded-2xl md:rounded-3xl shadow-xl
+//                        xl:sticky xl:top-10"
+//           >
+//             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-yellow-400 text-center">
+//               🛒 Your Cart
+//             </h2>
+
+//             {menuItem ? (
+//               <div className="space-y-3 md:space-y-4">
+//                 <img
+//                   src={menuItem.image}
+//                   alt={menuItem.name}
+//                   className="w-full h-28 sm:h-36 md:h-40 object-cover rounded-xl"
+//                 />
+
+//                 <h3 className="text-sm sm:text-base md:text-lg font-semibold">
+//                   {menuItem.name}
+//                 </h3>
+
+//                 <p className="text-green-400 font-bold text-sm sm:text-base">
+//                   ₹{menuItem.price}
+//                 </p>
+
+//                 <button
+//                   onClick={() => navigate("/dashboard/order")}
+//                   className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
+//                              py-2 sm:py-3 rounded-xl font-semibold
+//                              hover:scale-105 transition duration-300
+//                              text-xs sm:text-sm md:text-base"
+//                 >
+//                   Proceed to Order
+//                 </button>
+//               </div>
+//             ) : (
+//               <p className="text-gray-400 text-center text-sm">
+//                 No item selected
+//               </p>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ADMIN FORM */}
+//       {user?.accountType === "Admin" && (
+//         <div
+//           className="max-w-4xl mx-auto mt-12 md:mt-20
+//                      bg-white/10 backdrop-blur-xl
+//                      border border-yellow-500/30
+//                      p-4 sm:p-6 md:p-10
+//                      rounded-2xl md:rounded-3xl shadow-xl"
+//         >
+//           <h2 className="text-lg sm:text-xl md:text-3xl font-semibold mb-6 md:mb-8 text-yellow-400 text-center">
+//             Add Signature Dish
+//           </h2>
+
+//           <form onSubmit={submitHandler} className="space-y-4 md:space-y-6">
+//             <input
+//               placeholder="Dish Name"
+//               value={formdata.name}
+//               onChange={(e) =>
+//                 setFormdata({ ...formdata, name: e.target.value })
+//               }
+//               className="w-full bg-white/10 border border-white/20
+//                          px-4 py-2 sm:py-3 rounded-xl
+//                          focus:ring-2 focus:ring-yellow-500 outline-none"
+//               required
+//             />
+
+//             <input
+//               type="number"
+//               placeholder="Price"
+//               value={formdata.price}
+//               onChange={(e) =>
+//                 setFormdata({ ...formdata, price: e.target.value })
+//               }
+//               className="w-full bg-white/10 border border-white/20
+//                          px-4 py-2 sm:py-3 rounded-xl
+//                          focus:ring-2 focus:ring-yellow-500 outline-none"
+//               required
+//             />
+
+//             <textarea
+//               rows="3"
+//               placeholder="Description"
+//               value={formdata.description}
+//               onChange={(e) =>
+//                 setFormdata({
+//                   ...formdata,
+//                   description: e.target.value,
+//                 })
+//               }
+//               className="w-full bg-white/10 border border-white/20
+//                          px-4 py-2 sm:py-3 rounded-xl
+//                          focus:ring-2 focus:ring-yellow-500 outline-none"
+//               required
+//             />
+
+//             <Upload
+//               onChange={(file) =>
+//                 setFormdata({ ...formdata, image: file })
+//               }
+//             />
+
+//             <button
+//               type="submit"
+//               className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
+//                          py-3 rounded-xl font-semibold
+//                          hover:scale-105 transition duration-300"
+//             >
+//               Add to Menu
+//             </button>
+//           </form>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createMenu, getAllMenus, deleteMenu } from "../../services/menuApi";
 import { setMenuItem } from "../../slices/menuSlice";
@@ -687,36 +946,31 @@ export default function MenuContainer() {
   const { menu, menuItem } = useSelector((state) => state.menu);
   const navigate = useNavigate();
 
-  const [formdata, setFormdata] = useState({
-    name: "",
-    price: "",
-    description: "",
-    image: null,
-  });
+  const [visibleCards, setVisibleCards] = useState([]);
+
+  const observer = useRef(null);
 
   useEffect(() => {
     if (token) dispatch(getAllMenus(token));
   }, [dispatch, token]);
 
-  function submitHandler(e) {
-    e.preventDefault();
-    const data = new FormData();
+  // Intersection Observer for scroll reveal
+  useEffect(() => {
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleCards((prev) => [...prev, entry.target.id]);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+  }, []);
 
-    Object.keys(formdata).forEach((key) => {
-      if (formdata[key] !== null) {
-        data.append(key, formdata[key]);
-      }
-    });
-
-    dispatch(createMenu(data, token));
-
-    setFormdata({
-      name: "",
-      price: "",
-      description: "",
-      image: null,
-    });
-  }
+  const cardRef = (node) => {
+    if (node) observer.current.observe(node);
+  };
 
   function deleteHandler(menuId) {
     dispatch(deleteMenu(menuId, token));
@@ -724,208 +978,101 @@ export default function MenuContainer() {
 
   function orderhandler(item) {
     dispatch(setMenuItem(item));
-    navigate("/dashboard/order");
   }
 
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed text-white
-                 px-4 sm:px-6 lg:px-10
-                 py-8 sm:py-12 md:py-16 overflow-x-hidden"
+                 px-4 py-8"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80')",
+          "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80')",
       }}
     >
       {/* HEADER */}
-      <div className="text-center mb-8 sm:mb-12 md:mb-16">
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-yellow-400">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold text-yellow-400">
           Royal Gourmet Menu
         </h1>
-        <p className="text-gray-300 mt-2 text-xs sm:text-sm md:text-lg">
-          Premium Cuisine • Luxury Dining • Signature Experience
-        </p>
       </div>
 
-      {/* MAIN GRID */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-10">
+      {/* GRID */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
-        {/* MENU LIST */}
-        <div className="xl:col-span-2 space-y-5 sm:space-y-6 md:space-y-8 order-2 xl:order-1">
-          {menu?.map((m) => (
-            <div
-              key={m._id}
-              onClick={() => orderhandler(m)}
-              className="group bg-white/10 backdrop-blur-lg
-                         border border-white/20
-                         rounded-2xl md:rounded-3xl
-                         overflow-hidden shadow-xl
-                         hover:-translate-y-2
-                         transition duration-500 cursor-pointer"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2">
-
-                {m.image && (
-                  <div className="overflow-hidden">
-                    <img
-                      src={m.image}
-                      alt={m.name}
-                      className="w-full h-40 sm:h-48 md:h-60 object-cover
-                                 group-hover:scale-110 transition duration-700"
-                    />
-                  </div>
-                )}
-
-                <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-center space-y-2 sm:space-y-3 md:space-y-4">
-                  <h2 className="text-lg sm:text-xl md:text-3xl font-semibold text-yellow-400">
-                    {m.name}
-                  </h2>
-
-                  <p className="text-gray-300 text-xs sm:text-sm md:text-base">
-                    {m.description}
-                  </p>
-
-                  <p className="text-base sm:text-lg md:text-2xl text-green-400 font-semibold">
-                    ₹{m.price}
-                  </p>
-
-                  {user?.accountType === "Admin" && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteHandler(m._id);
-                      }}
-                      className="w-full sm:w-auto px-4 py-2
-                                 bg-red-600 rounded-lg
-                                 hover:bg-red-700 transition text-xs sm:text-sm"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* CART SECTION */}
-        <div className="order-1 xl:order-2">
+        {menu?.map((m, index) => (
           <div
-            className="bg-white/10 backdrop-blur-xl
-                       border border-yellow-500/30
-                       p-4 sm:p-6 md:p-8
-                       rounded-2xl md:rounded-3xl shadow-xl
-                       xl:sticky xl:top-10"
+            key={m._id}
+            id={m._id}
+            ref={cardRef}
+            className={`bg-white/10 backdrop-blur-lg
+                        rounded-xl overflow-hidden
+                        shadow-lg transition-all duration-700
+                        ${
+                          visibleCards.includes(m._id)
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-10"
+                        }`}
           >
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-yellow-400 text-center">
-              🛒 Your Cart
-            </h2>
+            <div onClick={() => orderhandler(m)} className="cursor-pointer">
+              <img
+                src={m.image}
+                alt={m.name}
+                className="w-full h-32 object-cover"
+              />
 
-            {menuItem ? (
-              <div className="space-y-3 md:space-y-4">
-                <img
-                  src={menuItem.image}
-                  alt={menuItem.name}
-                  className="w-full h-28 sm:h-36 md:h-40 object-cover rounded-xl"
-                />
+              <div className="p-3">
+                <h2 className="text-sm font-semibold text-yellow-400 truncate">
+                  {m.name}
+                </h2>
 
-                <h3 className="text-sm sm:text-base md:text-lg font-semibold">
-                  {menuItem.name}
-                </h3>
-
-                <p className="text-green-400 font-bold text-sm sm:text-base">
-                  ₹{menuItem.price}
+                <p className="text-xs text-gray-300 line-clamp-2 mt-1">
+                  {m.description}
                 </p>
 
-                <button
-                  onClick={() => navigate("/dashboard/order")}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
-                             py-2 sm:py-3 rounded-xl font-semibold
-                             hover:scale-105 transition duration-300
-                             text-xs sm:text-sm md:text-base"
-                >
-                  Proceed to Order
-                </button>
+                <p className="text-green-400 font-bold mt-2">
+                  ₹{m.price}
+                </p>
               </div>
-            ) : (
-              <p className="text-gray-400 text-center text-sm">
-                No item selected
-              </p>
+            </div>
+
+            {user?.accountType === "Admin" && (
+              <button
+                onClick={() => deleteHandler(m._id)}
+                className="w-full bg-red-600 text-xs py-1
+                           hover:bg-red-700"
+              >
+                Delete
+              </button>
             )}
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* ADMIN FORM */}
-      {user?.accountType === "Admin" && (
+      {/* SMALL CART */}
+      {menuItem && (
         <div
-          className="max-w-4xl mx-auto mt-12 md:mt-20
-                     bg-white/10 backdrop-blur-xl
-                     border border-yellow-500/30
-                     p-4 sm:p-6 md:p-10
-                     rounded-2xl md:rounded-3xl shadow-xl"
+          className="fixed bottom-4 right-4
+                     bg-black/80 backdrop-blur-md
+                     border border-yellow-500/40
+                     rounded-xl p-4 w-56 shadow-xl"
         >
-          <h2 className="text-lg sm:text-xl md:text-3xl font-semibold mb-6 md:mb-8 text-yellow-400 text-center">
-            Add Signature Dish
-          </h2>
+          <h3 className="text-yellow-400 text-sm font-semibold mb-2">
+            🛒 Selected
+          </h3>
 
-          <form onSubmit={submitHandler} className="space-y-4 md:space-y-6">
-            <input
-              placeholder="Dish Name"
-              value={formdata.name}
-              onChange={(e) =>
-                setFormdata({ ...formdata, name: e.target.value })
-              }
-              className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 sm:py-3 rounded-xl
-                         focus:ring-2 focus:ring-yellow-500 outline-none"
-              required
-            />
+          <p className="text-sm">{menuItem.name}</p>
+          <p className="text-green-400 font-bold text-sm">
+            ₹{menuItem.price}
+          </p>
 
-            <input
-              type="number"
-              placeholder="Price"
-              value={formdata.price}
-              onChange={(e) =>
-                setFormdata({ ...formdata, price: e.target.value })
-              }
-              className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 sm:py-3 rounded-xl
-                         focus:ring-2 focus:ring-yellow-500 outline-none"
-              required
-            />
-
-            <textarea
-              rows="3"
-              placeholder="Description"
-              value={formdata.description}
-              onChange={(e) =>
-                setFormdata({
-                  ...formdata,
-                  description: e.target.value,
-                })
-              }
-              className="w-full bg-white/10 border border-white/20
-                         px-4 py-2 sm:py-3 rounded-xl
-                         focus:ring-2 focus:ring-yellow-500 outline-none"
-              required
-            />
-
-            <Upload
-              onChange={(file) =>
-                setFormdata({ ...formdata, image: file })
-              }
-            />
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-500 to-amber-600
-                         py-3 rounded-xl font-semibold
-                         hover:scale-105 transition duration-300"
-            >
-              Add to Menu
-            </button>
-          </form>
+          <button
+            onClick={() => navigate("/dashboard/order")}
+            className="mt-3 w-full bg-yellow-500
+                       text-black text-sm py-1.5
+                       rounded-lg hover:bg-yellow-400"
+          >
+            Order
+          </button>
         </div>
       )}
     </div>

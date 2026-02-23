@@ -370,7 +370,7 @@ export default function OrderContainer() {
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4 py-8">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4 py-8 text-black">
       <div className="bg-white shadow-xl rounded-2xl p-5 sm:p-6 w-full max-w-md">
 
         {/* Image */}

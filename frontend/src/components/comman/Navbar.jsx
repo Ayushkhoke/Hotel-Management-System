@@ -46,6 +46,7 @@
 //     )
 // }
 
+
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -60,16 +61,19 @@ export default function Navbar() {
     "relative text-sm font-medium tracking-wide hover:text-yellow-400 transition duration-300 after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-yellow-400 after:transition-all after:duration-300 hover:after:w-full";
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white">
+    <header className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         {/* LOGO */}
-        <Link to="/" className="text-2xl font-bold text-yellow-400 tracking-wider">
+        <Link
+          to="/"
+          className="text-2xl font-bold text-yellow-400 tracking-wider"
+        >
           Royal Grand
         </Link>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden md:flex gap-8 items-center">
+        <nav className="hidden md:flex gap-8 items-center relative">
           <NavLink to="/" className={navStyle}>
             Home
           </NavLink>
@@ -90,12 +94,16 @@ export default function Navbar() {
               <NavLink to="/dashboard" className={navStyle}>
                 Dashboard
               </NavLink>
-              <ProfileDropdown />
+
+              {/* Profile Dropdown */}
+              <div className="relative">
+                <ProfileDropdown />
+              </div>
             </>
           )}
         </nav>
 
-        {/* MOBILE ICON */}
+        {/* MOBILE MENU BUTTON */}
         <div className="md:hidden">
           <button onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={26} /> : <Menu size={26} />}
@@ -145,7 +153,7 @@ export default function Navbar() {
                 Dashboard
               </NavLink>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center mt-4">
                 <ProfileDropdown />
               </div>
             </>
