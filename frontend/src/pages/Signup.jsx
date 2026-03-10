@@ -430,12 +430,15 @@ export default function Signup() {
       // Render the official Google button
       const buttonDiv = document.getElementById("google-signup-button");
       if (buttonDiv) {
+        // Google expects width as number (px), not "%".
+        const computedWidth = Math.max(240, Math.min(400, Math.floor(buttonDiv.clientWidth || 320)));
+        buttonDiv.innerHTML = "";
         window.google.accounts.id.renderButton(
           buttonDiv,
           {
             theme: "outline",
             size: "large",
-            width: "100%",
+            width: computedWidth,
             text: "signup_with",
             shape: "rectangular",
             logo_alignment: "left"
@@ -455,6 +458,13 @@ export default function Signup() {
     script.defer = true;
     script.onload = initializeGoogle;
     document.body.appendChild(script);
+
+    const rerenderOnResize = () => initializeGoogle();
+    window.addEventListener("resize", rerenderOnResize);
+
+    return () => {
+      window.removeEventListener("resize", rerenderOnResize);
+    };
   }, [dispatch, googleClientId, navigate]);
 
   function changehandler(e) {
