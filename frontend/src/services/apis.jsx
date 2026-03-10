@@ -1,9 +1,9 @@
 // 🔹 Switch BASE_URL based on your environment
 // For LOCAL development: Use localhost
-const BASE_URL="http://localhost:4000/api/v1"
+// const BASE_URL="http://localhost:4000/api/v1"
 
 // For PRODUCTION deployment: Use your deployed backend URL
-// const BASE_URL="https://hotel-management-system-1-5e51.onrender.com/api/v1"
+const BASE_URL="https://hotel-management-system-1-5e51.onrender.com/api/v1"
 
 export const auth={
     SIGNUP_API:BASE_URL+"/auth/signup",
