@@ -263,7 +263,7 @@ export default function TableBooking({ tableId, closeModal }) {
   return (
     <div
       onClick={handleCancel}
-      className="fixed inset-0 z-[100] flex items-center justify-center"
+      className="fixed inset-0 z-100 flex items-center justify-center p-3 sm:p-4"
     >
       {/* Background Image */}
       <div
@@ -280,12 +280,12 @@ export default function TableBooking({ tableId, closeModal }) {
       {/* Booking Card */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]"
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-5 border-b border-white/20">
+        <div className="flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 border-b border-white/20">
           <div>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-lg sm:text-xl font-semibold text-white">
               Reserve Your Table
             </h2>
             <p className="text-sm text-gray-300">
@@ -302,7 +302,7 @@ export default function TableBooking({ tableId, closeModal }) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleBooking} className="p-6 space-y-6">
+        <form onSubmit={handleBooking} className="p-4 sm:p-6 space-y-5 sm:space-y-6">
 
           {/* Date */}
           <div>
@@ -364,7 +364,7 @@ export default function TableBooking({ tableId, closeModal }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-semibold py-3 rounded-lg hover:opacity-90 transition"
+            className="w-full bg-linear-to-r from-amber-500 to-yellow-400 text-black font-semibold py-3 rounded-lg hover:opacity-90 transition"
           >
             {loading ? "Processing Reservation..." : "Confirm Reservation"}
           </button>

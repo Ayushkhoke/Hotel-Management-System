@@ -1,15 +1,23 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useEffect } from 'react'
 import './App.css'
 import Navbar from './components/comman/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import { Route, Routes } from 'react-router-dom'
+import { HEALTHCHECK_URL } from './services/apis.jsx'
+import { scheduleIdleTask, warmBackendConnection } from './utils/performance.js'
+
+const lazyWithPreload = (factory) => {
+  const Component = lazy(factory)
+  Component.preload = factory
+  return Component
+}
 
 // Lazy load all pages and components for better performance
-const Home = lazy(() => import('./pages/Home.jsx'))
-const Login = lazy(() => import('./pages/Login.jsx'))
-const Signup = lazy(() => import('./pages/Signup.jsx'))
+const Home = lazyWithPreload(() => import('./pages/Home.jsx'))
+const Login = lazyWithPreload(() => import('./pages/Login.jsx'))
+const Signup = lazyWithPreload(() => import('./pages/Signup.jsx'))
 const Verifyemail = lazy(() => import('./pages/Verifyemail.jsx'))
-const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
+const Dashboard = lazyWithPreload(() => import('./pages/Dashboard.jsx'))
 const RoomContainer = lazy(() => import('./components/Dashboard/RoomContainer.jsx'))
 const OrderContainer = lazy(() => import('./components/Dashboard/OrderContainer.jsx'))
 const MenuContainer = lazy(() => import('./components/Dashboard/MenuContainer.jsx'))
@@ -23,7 +31,7 @@ const ChangePassword = lazy(() => import('./pages/ChangePassword.jsx'))
 const RoomBookingPage = lazy(() => import('./components/Dashboard/RoomBookingPage.jsx'))
 const TableBookingPage = lazy(() => import('./components/Dashboard/TableBookingPage.jsx'))
 const AiChat = lazy(() => import('./pages/AiComponent.jsx'))
-const ContactUs = lazy(() => import('./pages/ContactUs.jsx'))
+const ContactUs = lazyWithPreload(() => import('./pages/ContactUs.jsx'))
 const Tablecontainer = lazy(() => import('./components/Dashboard/Tablecontainer.jsx'))
 
 // Loading fallback component
@@ -33,6 +41,17 @@ const PageLoader = () => (
   </div>
 ) 
 function App() {
+  useEffect(() => {
+    const cancelIdleTask = scheduleIdleTask(() => {
+      warmBackendConnection(HEALTHCHECK_URL)
+      Login.preload?.()
+      Signup.preload?.()
+      Dashboard.preload?.()
+      ContactUs.preload?.()
+    })
+
+    return cancelIdleTask
+  }, [])
   
 
   return (

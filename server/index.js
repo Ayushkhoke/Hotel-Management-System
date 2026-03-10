@@ -79,7 +79,9 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 const cors = require("cors");
+const helmet = require("helmet");
 // const fileupload = require("express-fileupload");
 const os = require("os");
 
@@ -127,7 +129,17 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+    contentSecurityPolicy: false,
+  })
+);
+app.use(compression());
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(cookieParser());
 
 // app.use(fileupload({
@@ -142,6 +154,13 @@ app.use("/api/v1/booking", bookingRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/aireceptionist", aiRoutes);
 app.use("/api/v1/contact", contactRoutes);
+app.get("/api/v1/health", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.status(200).json({
+    success: true,
+    message: "API is ready",
+  });
+});
 app.get("/", (req, res) => {
   res.json({
     success: true,

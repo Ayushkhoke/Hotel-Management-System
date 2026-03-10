@@ -232,18 +232,18 @@ export default function Tablecontainer() {
   });
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(1200px_500px_at_-10%_-10%,#c7f9cc_0%,#f8f9fa_55%,#eef2ff_100%)] px-4 sm:px-6 lg:px-8 py-8 md:py-10 text-gray-900">
+    <div className="min-h-screen overflow-x-hidden bg-[radial-gradient(1200px_500px_at_-10%_-10%,#c7f9cc_0%,#f8f9fa_55%,#eef2ff_100%)] px-3 sm:px-6 lg:px-8 py-6 md:py-10 text-gray-900">
       <div className="w-full">
         <div className="mb-4 text-sm text-gray-500">Dashboard &gt; Dining Tables &gt; Reservations</div>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 pb-4 mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Restaurant Tables ({sortedTables.length})</h1>
-          <div className="flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Restaurant Tables ({sortedTables.length})</h1>
+          <div className="flex flex-wrap items-center gap-3">
             <span className="text-sm text-gray-600">Sort By</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              className="bg-white border border-gray-300 rounded-md px-3 py-1.5 text-sm min-w-36"
             >
               <option value="popular">Popularity</option>
               <option value="available">Availability</option>
@@ -295,14 +295,16 @@ export default function Tablecontainer() {
                   key={t._id} 
                   className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-[420px_1fr]">
+                  <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr]">
                     
                     {/* Image Section */}
-                    <div className="relative h-64 md:h-auto bg-gray-100">
+                    <div className="relative h-56 sm:h-64 lg:h-auto bg-gray-100">
                       <img
                         src={image}
                         alt={`Table ${t.tableNumber}`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute top-3 left-3 bg-emerald-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
                         {seatingTag}
@@ -312,7 +314,7 @@ export default function Tablecontainer() {
                     <div className="p-5 md:p-6">
                       <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
                         <div className="flex-1">
-                          <h2 className="text-2xl font-bold leading-tight">Table {t.tableNumber} Dining Slot</h2>
+                          <h2 className="text-xl sm:text-2xl font-bold leading-tight">Table {t.tableNumber} Dining Slot</h2>
                           <p className="text-gray-600 mt-1">Capacity {t.capacity} guests - Indoor dining - Premium service</p>
 
                           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-700">
@@ -327,13 +329,13 @@ export default function Tablecontainer() {
 
                           <div className="mt-5">
                             <div className="flex flex-wrap items-baseline gap-2">
-                              <span className="text-4xl font-bold text-gray-900">
+                              <span className="text-3xl sm:text-4xl font-bold text-gray-900">
                                 ${formatCurrency(tablePrice)}
                               </span>
-                              <span className="text-2xl line-through text-gray-400 font-semibold">
+                              <span className="text-xl sm:text-2xl line-through text-gray-400 font-semibold">
                                 ${formatCurrency(oldPrice)}
                               </span>
-                              <span className="text-xl text-orange-500 font-semibold">
+                              <span className="text-base sm:text-xl text-orange-500 font-semibold">
                                 {discountPercent}% off
                               </span>
                             </div>
@@ -341,18 +343,18 @@ export default function Tablecontainer() {
                           </div>
                         </div>
 
-                        <div className="flex lg:flex-col gap-3 lg:items-end">
+                        <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end w-full lg:w-auto">
                           {user?.accountType === "Admin" ? (
                             <>
                               <button
                                 onClick={() => editHandler(t)}
-                                className="px-6 py-2.5 rounded-md border border-indigo-500 text-indigo-700 font-semibold hover:bg-indigo-50 transition"
+                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-indigo-500 text-indigo-700 font-semibold hover:bg-indigo-50 transition"
                               >
                                 Edit Table
                               </button>
                               <button
                                 onClick={() => deleteHandler(t._id, t.tableNumber)}
-                                className="px-6 py-2.5 rounded-md border border-red-500 text-red-700 font-semibold hover:bg-red-50 transition"
+                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-red-500 text-red-700 font-semibold hover:bg-red-50 transition"
                               >
                                 Delete Table
                               </button>
@@ -361,14 +363,14 @@ export default function Tablecontainer() {
                             <>
                               <button
                                 onClick={() => handleBookTable(t._id)}
-                                className="px-6 py-2.5 rounded-md border border-gray-400 text-gray-800 font-semibold hover:bg-gray-50 transition"
+                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-gray-400 text-gray-800 font-semibold hover:bg-gray-50 transition"
                               >
                                 View Details
                               </button>
                               <button
                                 onClick={() => handleBookTable(t._id)}
                                 disabled={t.status !== "available"}
-                                className="px-6 py-2.5 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
                               >
                                 {t.status === "available" ? "Reserve Now" : "Unavailable"}
                               </button>

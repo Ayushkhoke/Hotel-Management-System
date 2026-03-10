@@ -8,7 +8,8 @@ exports.signup=async(req,res)=>{
     try{
         const {firstname,lastname,email,password,confirmpassword,accountType,phone}=req.body;
    const image = req.file ? req.file.path : null;
-        const userexists=await User.findOne({email}); 
+    const normalizedEmail = email?.trim().toLowerCase();
+    const userexists=await User.findOne({ email: normalizedEmail }).select("_id").lean(); 
         if(userexists){
             return res.status(400).json({message:"User already exists"});
         }
@@ -35,7 +36,7 @@ if (!req.file) {
         const newUser=await User.create({
             firstname,
             lastname,
-            email,
+          email: normalizedEmail,
             password:hashedPassword,
             confirmpassword:confirmpassword,
             accountType,
@@ -64,7 +65,10 @@ exports.login=async(req,res)=>{
         if(!email || !password){
             return res.status(400).json({message:"All fields are required"});
         }
-        const user=await User.findOne({email});
+    const normalizedEmail = email.trim().toLowerCase();
+    const user=await User.findOne({ email: normalizedEmail })
+      .select("firstname lastname email password accountType image authProvider googleId phone")
+      .lean();
         if(!user){
             return res.status(400).json({message:"User does not exist"});
         }
@@ -84,8 +88,17 @@ exports.login=async(req,res)=>{
         // geneart jwt passwort  match
         if(await bcrypt.compare(password,user.password)){
             const token=jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"7d"});
-           user.token=token;
-           user.password=undefined;
+           const safeUser = {
+          _id: user._id,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          email: user.email,
+          accountType: user.accountType,
+          image: user.image,
+          authProvider: user.authProvider,
+          googleId: user.googleId,
+          phone: user.phone,
+           };
 
         //    create a cookie
         const options={
@@ -95,7 +108,7 @@ exports.login=async(req,res)=>{
         res.cookie("token",token,options).status(200).json({
             success:true,
             message:"Login successful",
-            user,
+          user: safeUser,
             token       
         });
         }
@@ -144,7 +157,7 @@ exports.googleAuth = async (req, res) => {
       });
     }
 
-    const email = tokenInfo.email;
+    const email = tokenInfo.email.trim().toLowerCase();
     let user = await User.findOne({ email });
 
     if (!user) {

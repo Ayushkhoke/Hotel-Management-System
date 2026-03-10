@@ -43,7 +43,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { LoginUser, googleAuthUser } from "../services/authApi.jsx";
-import { API_ORIGIN } from "../services/apis.jsx";
+import { HEALTHCHECK_URL } from "../services/apis.jsx";
+import { addOriginHints, warmBackendConnection } from "../utils/performance.js";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -61,31 +62,10 @@ export default function Login() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    // Speed up first API request by preconnecting and warming the backend.
-    const preconnect = document.createElement("link");
-    preconnect.rel = "preconnect";
-    preconnect.href = API_ORIGIN;
-    preconnect.crossOrigin = "";
+    const cleanupHints = addOriginHints(HEALTHCHECK_URL);
+    warmBackendConnection(HEALTHCHECK_URL);
 
-    const dnsPrefetch = document.createElement("link");
-    dnsPrefetch.rel = "dns-prefetch";
-    dnsPrefetch.href = API_ORIGIN;
-
-    document.head.appendChild(preconnect);
-    document.head.appendChild(dnsPrefetch);
-
-    fetch(`${API_ORIGIN}/`, {
-      method: "GET",
-      cache: "no-store",
-      credentials: "omit",
-    }).catch(() => {
-      // Ignore warm-up failures; login request is still sent normally.
-    });
-
-    return () => {
-      document.head.removeChild(preconnect);
-      document.head.removeChild(dnsPrefetch);
-    };
+    return cleanupHints;
   }, []);
 
   useEffect(() => {
@@ -168,12 +148,16 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
-      style={{
-backgroundImage:
-"url(https://images.unsplash.com/photo-1414235077428-338989a2e8c0)"
-      }}
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
     >
+      <img
+        src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=70"
+        alt="Hotel lobby"
+        className="absolute inset-0 h-full w-full object-cover"
+        decoding="async"
+        fetchPriority="high"
+        sizes="100vw"
+      />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
@@ -201,6 +185,7 @@ backgroundImage:
               placeholder="admin@hotel.com"
               value={formData.email}
               onChange={changeHandler}
+              autoComplete="email"
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-600 focus:outline-none text-black"
             />
@@ -219,6 +204,7 @@ backgroundImage:
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={changeHandler}
+                autoComplete="current-password"
                 required
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-600 focus:outline-none text-black"
               />

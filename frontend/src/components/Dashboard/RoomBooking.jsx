@@ -182,7 +182,7 @@ export default function RoomBooking({ room, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
 
       {/* NEW Background Image */}
       <div
@@ -197,12 +197,12 @@ export default function RoomBooking({ room, onClose }) {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)] p-6 text-white">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)] p-4 sm:p-6 text-white">
 
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
               <BedDouble size={20} />
               Room {room.roomNumber}
             </h2>

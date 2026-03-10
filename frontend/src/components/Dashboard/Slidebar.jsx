@@ -209,7 +209,7 @@
 
 import React, { useEffect, useState } from "react";
 import { SIDEBAR_LINKS } from "../../data/sidebarLinks";
-import { Menu, ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
@@ -241,22 +241,23 @@ export default function Sidebar() {
         className="md:hidden fixed top-20 left-4 z-[80] 
         bg-gradient-to-r from-amber-500 to-yellow-600 
         text-black p-2 rounded-lg shadow-lg"
+        aria-label="Open sidebar"
       >
-        <Menu size={22} />
+        <ChevronRight size={22} />
       </button>
 
       {/* Overlay */}
       {open && (
         <div
-          className="fixed top-16 left-0 right-0 bottom-0 bg-black/60 backdrop-blur-sm md:hidden z-[70]"
+          className="fixed top-16 left-0 right-0 bottom-0 bg-black/60 backdrop-blur-sm md:hidden z-70"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-16 md:top-0 left-0 z-[75] md:z-auto h-[calc(100vh-4rem)] md:h-screen
-        bg-gradient-to-b from-[#0f172a] via-[#020617] to-black
+        className={`fixed md:static top-16 md:top-0 left-0 z-75 md:z-auto h-[calc(100vh-4rem)] md:h-screen
+        bg-linear-to-b from-[#0f172a] via-[#020617] to-black
         border-r border-gray-800 text-gray-300
         transition-all duration-300 ease-in-out
         ${open ? "translate-x-0 w-[82vw] max-w-[320px]" : "-translate-x-full md:translate-x-0 md:w-20"}
@@ -274,10 +275,11 @@ export default function Sidebar() {
 
           <button
             onClick={() => setOpen(!open)}
-            className="hidden md:flex items-center justify-center
+            className="flex items-center justify-center
             w-9 h-9 rounded-lg hover:bg-gray-800 transition"
+            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
           >
-            {open ? <ChevronLeft /> : <Menu />}
+            {open ? <ChevronLeft /> : <ChevronRight />}
           </button>
         </div>
 

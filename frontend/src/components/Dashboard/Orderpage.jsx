@@ -359,7 +359,7 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-gray-50">
 
       {/* HERO SECTION */}
-      <div className="relative h-[300px] overflow-hidden mb-10">
+      <div className="relative h-55 sm:h-65 overflow-hidden mb-6 sm:mb-10">
 
         <img
           src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
@@ -369,18 +369,18 @@ export default function OrdersPage() {
 
         <div className="absolute inset-0 bg-black/60"></div>
 
-        <div className="relative h-full flex items-center max-w-6xl mx-auto px-6">
+        <div className="relative h-full flex items-center max-w-6xl mx-auto px-4 sm:px-6">
 
-          <div className="flex items-center gap-4 text-white">
+          <div className="flex items-center gap-2 sm:gap-4 text-white">
 
-            <UtensilsCrossed size={40} className="text-amber-400"/>
+            <UtensilsCrossed size={28} className="text-amber-400"/>
 
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold">
                 My Orders
               </h1>
 
-              <p className="text-gray-200 mt-1">
+              <p className="text-sm sm:text-base text-gray-200 mt-1">
                 {loading ? "Loading..." : `${order?.length || 0} Orders`}
               </p>
             </div>
@@ -392,7 +392,7 @@ export default function OrdersPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="max-w-6xl mx-auto px-6 space-y-8 pb-12">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 space-y-4 sm:space-y-8 pb-10 sm:pb-12">
 
         {loading && (
           <div className="text-center py-20">
@@ -409,13 +409,13 @@ export default function OrdersPage() {
             animate={{ opacity:1, y:0 }}
             transition={{ duration:0.4, delay:index * 0.1 }}
             whileHover={{ y:-5 }}
-            className="bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden"
+            className="bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden"
           >
 
-            <div className="flex flex-col md:flex-row md:h-[420px]">
+            <div className="flex flex-col md:flex-row md:h-105">
 
               {/* IMAGE SECTION */}
-              <div className="relative w-full md:w-[55%] h-[260px] md:h-full overflow-hidden">
+              <div className="relative w-full md:w-[55%] h-48 sm:h-64 md:h-full overflow-hidden">
 
                 <motion.img
                   whileHover={{ scale:1.05 }}
@@ -426,12 +426,14 @@ export default function OrdersPage() {
                   }
                   alt="food"
                   className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
 
                 {/* LABEL */}
-                <div className="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full shadow flex items-center gap-2">
+                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/90 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow flex items-center gap-1.5 sm:gap-2 max-w-[75%]">
                   <Sparkles size={14} className="text-amber-500"/>
-                  <span className="text-sm font-semibold">
+                  <span className="text-xs sm:text-sm font-semibold truncate">
                     {item.items?.length > 1
                       ? `${item.items.length} Items`
                       : item.items?.[0]?.menuItem?.name || "Chef Special"}
@@ -439,19 +441,19 @@ export default function OrdersPage() {
                 </div>
 
                 {/* PAYMENT STATUS */}
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
 
                   {item.paymentStatus === "paid" ? (
 
-                    <div className="bg-emerald-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow">
-                      <CheckCircle size={16}/>
+                    <div className="bg-emerald-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-1.5 sm:gap-2 shadow text-xs sm:text-sm font-semibold">
+                      <CheckCircle size={14}/>
                       Paid
                     </div>
 
                   ) : (
 
-                    <div className="bg-amber-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow">
-                      <Clock size={16}/>
+                    <div className="bg-amber-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-1.5 sm:gap-2 shadow text-xs sm:text-sm font-semibold">
+                      <Clock size={14}/>
                       Pending
                     </div>
 
@@ -460,39 +462,39 @@ export default function OrdersPage() {
                 </div>
 
                 {/* RATING */}
-                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur px-4 py-2 rounded-xl flex items-center gap-1">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 bg-black/60 backdrop-blur px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl flex items-center gap-1">
 
                   {[1,2,3,4,5].map((s)=>(
                     <Star key={s} size={14} className="text-amber-400 fill-amber-400"/>
                   ))}
 
-                  <span className="text-white ml-2 text-sm">5.0</span>
+                  <span className="text-white ml-1 sm:ml-2 text-xs sm:text-sm">5.0</span>
 
                 </div>
 
               </div>
 
               {/* DETAILS */}
-              <div className="md:w-[45%] p-8 flex flex-col justify-between">
+              <div className="md:w-[45%] p-4 sm:p-6 md:p-8 flex flex-col justify-between">
 
                 <div>
 
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">
                     {item.items?.length === 1
                       ? item.items[0]?.menuItem?.name
                       : `${item.items?.length} Item Order`}
                   </h2>
 
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4">
                     <Receipt size={16}/>
-                    <span className="font-mono">
+                    <span className="font-mono truncate">
                       #{item._id.slice(-8).toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="flex gap-3 mb-6">
+                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
 
-                    <div className={`px-4 py-2 rounded-xl border font-semibold ${
+                    <div className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border font-semibold text-xs sm:text-sm ${
                       item.paymentStatus === "paid"
                         ? "bg-emerald-50 border-emerald-300 text-emerald-700"
                         : "bg-amber-50 border-amber-300 text-amber-700"
@@ -500,7 +502,7 @@ export default function OrdersPage() {
                       {item.paymentStatus}
                     </div>
 
-                    <div className="px-4 py-2 rounded-xl border bg-gray-50 text-gray-700 capitalize">
+                    <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border bg-gray-50 text-gray-700 capitalize text-xs sm:text-sm">
                       {item.orderStatus || "processing"}
                     </div>
 
@@ -511,19 +513,19 @@ export default function OrdersPage() {
                 {/* PRICE */}
                 <div>
 
-                  <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border rounded-2xl mb-6">
+                  <div className="p-4 sm:p-6 bg-linear-to-r from-green-50 to-emerald-50 border rounded-2xl mb-4 sm:mb-6">
 
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 text-xs sm:text-sm">
                       Total Amount
                     </p>
 
                     <div className="flex items-center justify-between">
 
-                      <span className="text-4xl font-bold text-green-600">
+                      <span className="text-2xl sm:text-4xl font-bold text-green-600 leading-none">
                         ${item.totalAmount?.toLocaleString()}
                       </span>
 
-                      <DollarSign className="text-green-500" size={30}/>
+                      <DollarSign className="hidden sm:block text-green-500" size={30}/>
 
                     </div>
 
@@ -533,27 +535,28 @@ export default function OrdersPage() {
 
                     <button
                       onClick={()=>handlePayment(item)}
-                      className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl shadow hover:shadow-xl hover:shadow-green-500/50 transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-3 sm:py-4 bg-linear-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl shadow hover:shadow-xl hover:shadow-green-500/50 transition-all text-sm sm:text-base"
                     >
-                      <CreditCard size={20}/>
+                      <CreditCard size={18}/>
                       Pay Now
                     </button>
 
                   ) : item.paymentStatus === "paid" ? (
 
-                    <div className="flex items-center justify-center gap-2 py-4 border-2 border-emerald-200 bg-emerald-50 rounded-2xl text-emerald-700 font-bold">
+                    <div className="flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-emerald-200 bg-emerald-50 rounded-2xl text-emerald-700 font-bold text-sm sm:text-base">
 
-                      <CheckCircle size={20}/>
+                      <CheckCircle size={18}/>
                       Payment Completed
 
                     </div>
 
                   ) : (
 
-                    <div className="flex items-center justify-center gap-2 py-4 border-2 border-red-200 bg-red-50 rounded-2xl text-red-700 font-bold">
+                    <div className="flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-red-200 bg-red-50 rounded-2xl text-red-700 font-bold text-sm sm:text-base">
 
-                      <Clock size={20}/>
-                      Payment Failed - Try Again
+                      <Clock size={18}/>
+                      <span className="sm:hidden">Retry Payment</span>
+                      <span className="hidden sm:inline">Payment Failed - Try Again</span>
 
                     </div>
 

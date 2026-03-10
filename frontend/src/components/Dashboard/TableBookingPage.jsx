@@ -19,7 +19,7 @@ export default function TableBookingPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-x-hidden">
 
       {/* Background Image */}
       <div
@@ -33,7 +33,7 @@ export default function TableBookingPage() {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-      <div className="relative max-w-6xl mx-auto px-4 py-10">
+      <div className="relative max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
 
         {/* Back Button */}
         <button
@@ -44,21 +44,21 @@ export default function TableBookingPage() {
           Back to Tables
         </button>
 
-        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-8">
+        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-5 sm:gap-8">
 
           {/* TABLE IMAGE */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 shadow-xl">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-3 sm:p-4 shadow-xl">
             <img
               src={
                 table.image ||
                 "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
               }
               alt={`Table ${table.tableNumber}`}
-              className="w-full h-96 object-cover rounded-xl transition hover:scale-[1.02]"
+              className="w-full h-60 sm:h-80 md:h-96 object-cover rounded-xl transition hover:scale-[1.02]"
             />
 
             {/* Table Features */}
-            <div className="mt-4 grid grid-cols-3 gap-3 text-white text-center text-sm">
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-white text-center text-xs sm:text-sm">
               <div className="bg-white/10 backdrop-blur-xl rounded-lg p-3 border border-white/20">
                 <UtensilsCrossed className="mx-auto mb-1" size={20} />
                 <p>Fine Dining</p>
@@ -75,9 +75,9 @@ export default function TableBookingPage() {
           </div>
 
           {/* TABLE INFO CARD */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-8 shadow-xl text-white">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-5 sm:p-8 shadow-xl text-white">
 
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">
               Table {table.tableNumber}
             </h1>
 
@@ -93,7 +93,7 @@ export default function TableBookingPage() {
 
             {/* Price */}
             <div className="mb-8">
-              <p className="text-4xl font-bold text-amber-400">
+              <p className="text-3xl sm:text-4xl font-bold text-amber-400">
                 ${table.price}
               </p>
               <p className="text-sm text-gray-400">per person</p>
@@ -111,7 +111,7 @@ export default function TableBookingPage() {
             <button
               onClick={() => setShowBookingModal(true)}
               disabled={table.status === "occupied"}
-              className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-semibold py-3 rounded-xl hover:opacity-90 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-linear-to-r from-amber-500 to-yellow-400 text-black font-semibold py-3 rounded-xl hover:opacity-90 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {table.status === "occupied"
                 ? "Currently Booked"

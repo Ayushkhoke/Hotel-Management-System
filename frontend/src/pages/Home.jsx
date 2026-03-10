@@ -69,6 +69,8 @@
 
 import React, { useEffect, useState } from "react";
 import {Link} from 'react-router-dom';
+import { HEALTHCHECK_URL } from "../services/apis.jsx";
+import { scheduleIdleTask, warmBackendConnection } from "../utils/performance.js";
 // import AIChat from "./AiComponent";
 export default function Home() {
   // Keep destination in one place so map embed, search, and navigation always match.
@@ -178,6 +180,14 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const cancelIdleTask = scheduleIdleTask(() => {
+      warmBackendConnection(HEALTHCHECK_URL);
+    });
+
+    return cancelIdleTask;
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
 
@@ -187,6 +197,9 @@ export default function Home() {
           src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1600&q=80"
           alt="Luxury Hotel"
           className="w-full h-full object-cover"
+          decoding="async"
+          fetchPriority="high"
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/40"></div>
 
@@ -261,6 +274,8 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1000&q=80"
                 alt="Luxury Suite"
                 className="rounded-3xl shadow-xl"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
@@ -294,6 +309,8 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1000&q=80"
                 alt="Fine Dining"
                 className="rounded-3xl shadow-xl"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
@@ -307,6 +324,8 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80"
                 alt="Luxury Spa"
                 className="rounded-3xl shadow-xl"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 

@@ -1797,14 +1797,14 @@ export default function RoomContainer() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50 text-gray-900 px-3 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="w-full">
         <div className="mb-3 text-sm text-gray-500">
           Dashboard &gt; Rooms &gt; Accommodation
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-gray-200 pb-3 mb-5">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Available Rooms ({filteredRooms.length})
           </h1>
         </div>
@@ -1819,7 +1819,7 @@ export default function RoomContainer() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_380px] gap-6">
           <div className="space-y-5">
             {filteredRooms.map((r) => {
               const roomImages = getRoomImages(r);
@@ -1851,9 +1851,9 @@ export default function RoomContainer() {
                   key={r._id}
                   className="bg-white border border-gray-300 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-[420px_1fr] gap-0">
+                  <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] xl:grid-cols-[420px_1fr] gap-0">
                     {/* Room Image Section */}
-                    <div className="relative bg-gray-100 h-64 md:h-auto">
+                    <div className="relative bg-gray-100 h-56 sm:h-64 lg:h-auto">
                       <button
                         type="button"
                         onClick={() => openGallery(r, 0)}
@@ -1863,6 +1863,8 @@ export default function RoomContainer() {
                           src={mainImage}
                           alt={`Room ${r.roomNumber}`}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </button>
 
@@ -1899,7 +1901,7 @@ export default function RoomContainer() {
                     {/* Room Details */}
                     <div className="p-4 flex flex-col justify-between">
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900 leading-snug">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-snug">
                           Room {r.roomNumber} - {r.type} Suite
                         </h2>
                         
@@ -1944,7 +1946,7 @@ export default function RoomContainer() {
                       <div className="flex items-end justify-between mt-4 pt-3 border-t border-gray-200">
                         <div>
                           <div className="flex flex-wrap items-baseline gap-2">
-                            <span className="text-3xl font-bold text-gray-900">
+                            <span className="text-2xl sm:text-3xl font-bold text-gray-900">
                               ${formatCurrency(r.pricePerNight)}
                             </span>
                             <span className="text-lg font-medium text-gray-400 line-through">
@@ -1959,18 +1961,18 @@ export default function RoomContainer() {
                           </p>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                           {user?.accountType === "Admin" ? (
                             <>
                               <button
                                 onClick={() => editHandler(r)}
-                                className="px-4 py-2 rounded-md border border-blue-600 text-blue-700 text-sm font-semibold hover:bg-blue-50 transition"
+                                className="w-full lg:w-auto px-4 py-2 rounded-md border border-blue-600 text-blue-700 text-sm font-semibold hover:bg-blue-50 transition"
                               >
                                 Edit
                               </button>
                               <button
                                 onClick={() => deleteHandler(r._id)}
-                                className="px-4 py-2 rounded-md border border-red-600 text-red-700 text-sm font-semibold hover:bg-red-50 transition"
+                                className="w-full lg:w-auto px-4 py-2 rounded-md border border-red-600 text-red-700 text-sm font-semibold hover:bg-red-50 transition"
                               >
                                 Delete
                               </button>
@@ -1979,14 +1981,14 @@ export default function RoomContainer() {
                             <>
                               <button
                                 onClick={() => openRoomDetails(r)}
-                                className="px-4 py-2 rounded-md border border-gray-400 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50 transition"
+                                className="w-full lg:w-auto px-4 py-2 rounded-md border border-gray-400 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50 transition"
                               >
                                 View Details
                               </button>
                               <button
                                 onClick={() => openRoomDetails(r)}
                                 disabled={!r.isAvailable}
-                                className="px-5 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full lg:w-auto px-5 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 {r.isAvailable ? "Book Now" : "Unavailable"}
                               </button>
@@ -2091,11 +2093,11 @@ export default function RoomContainer() {
 
       {galleryState.open && (
         <div 
-          className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6"
+          className="fixed inset-0 z-100 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6"
         >
           <div className="relative bg-white rounded-2xl w-full max-w-6xl p-4 md:p-6 shadow-2xl border border-white/30">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+              <h3 className="text-base sm:text-xl font-bold text-gray-900 tracking-tight">
                 {galleryState.title} Gallery
               </h3>
               <button
@@ -2112,7 +2114,7 @@ export default function RoomContainer() {
                 key={galleryState.index}
                 src={galleryState.images[galleryState.index]}
                 alt={`Room image ${galleryState.index + 1}`}
-                className="w-full h-[50vh] md:h-[62vh] object-cover rounded-xl"
+                className="w-full h-[44vh] sm:h-[50vh] md:h-[62vh] object-cover rounded-xl"
               />
 
               <span className="absolute top-3 right-3 bg-black/60 text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -2142,7 +2144,7 @@ export default function RoomContainer() {
             </div>
 
             {galleryState.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-2">
+              <div className="mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-2">
                 {galleryState.images.map((img, index) => (
                   <button
                     key={`${img}-${index}`}
@@ -2159,7 +2161,7 @@ export default function RoomContainer() {
                     <img
                       src={img}
                       alt={`thumb-${index + 1}`}
-                      className="w-full h-12 md:h-14 object-cover"
+                      className="w-full h-10 sm:h-12 md:h-14 object-cover"
                     />
                   </button>
                 ))}

@@ -604,6 +604,309 @@
 // }
 
 
+// import React, { useEffect, useState, useMemo, useCallback } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { createMenu, getAllMenus, deleteMenu } from "../../services/menuApi";
+// import { setMenuItem } from "../../slices/menuSlice";
+// import { useNavigate } from "react-router-dom";
+// import { motion } from "framer-motion";
+// import { Search, Star, ChefHat, Trash2, Plus } from "lucide-react";
+// import Upload from "./Upload";
+// import { useDebounce } from "../../utils/useDebounce";
+
+// function formatCurrency(amount) {
+//   return new Intl.NumberFormat("en-IN", {
+//     maximumFractionDigits: 0,
+//   }).format(Number(amount || 0));
+// }
+
+// // Memoized star rating component
+// const StarRating = React.memo(() => (
+//   <div className="flex items-center gap-1 mb-3">
+//     {[...Array(5)].map((_,i)=>(
+//       <Star key={i} size={14} className="text-yellow-400 fill-yellow-400"/>
+//     ))}
+//     <span className="text-sm text-gray-500 ml-1">
+//       (4.8)
+//     </span>
+//   </div>
+// ));
+
+// StarRating.displayName = 'StarRating';
+
+// // Memoized menu card component to prevent unnecessary re-renders
+// const MenuCard = React.memo(({ m, index, user, deleteHandler, orderHandler }) => {
+//   return (
+//     <motion.div
+//       key={m._id}
+//       initial={{opacity:0,y:30}}
+//       animate={{opacity:1,y:0}}
+//       transition={{delay:index*0.02, duration: 0.3}}
+//       whileHover={{y:-8}}
+//       className="glass-card rounded-3xl overflow-hidden premium-shadow luxury-glow border"
+//     >
+//       {/* IMAGE */}
+//       <div className="relative h-44 overflow-hidden">
+//         <img
+//           src={m.image}
+//           alt={m.name}
+//           loading="lazy"
+//           className="w-full h-full object-cover transition duration-500 hover:scale-110"
+//         />
+//         <div className="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow">
+//           ${formatCurrency(m.price)}
+//         </div>
+//       </div>
+
+//       {/* CONTENT */}
+//       <div className="p-5">
+//         <h3 className="text-lg font-bold mb-1">
+//           {m.name}
+//         </h3>
+
+//         <StarRating />
+
+//         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+//           {m.description}
+//         </p>
+
+//         {/* ACTION */}
+//         {user?.accountType==="Admin" ? (
+//           <button
+//             onClick={()=>deleteHandler(m._id)}
+//             className="w-full flex items-center justify-center gap-2 border border-red-500 text-red-500 rounded-lg py-2 hover:bg-red-50"
+//           >
+//             <Trash2 size={16}/>
+//             Delete
+//           </button>
+//         ) : (
+//           <button
+//             onClick={()=>orderHandler(m)}
+//             className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:scale-[1.02]"
+//           >
+//             Order Now
+//           </button>
+//         )}
+//       </div>
+//     </motion.div>
+//   );
+// });
+
+// MenuCard.displayName = 'MenuCard';
+
+// export default function MenuContainer() {
+
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   const { token, user } = useSelector((state) => state.auth);
+//   const { menu } = useSelector((state) => state.menu);
+
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+//   const [formdata, setFormdata] = useState({
+//     name: "",
+//     price: "",
+//     description: "",
+//     image: null,
+//   });
+
+//   const [uploadKey, setUploadKey] = useState(0);
+
+//   useEffect(() => {
+//     if (token) dispatch(getAllMenus(token));
+//   }, [dispatch, token]);
+
+//   const submitHandler = useCallback(async (e) => {
+//     e.preventDefault();
+
+//     const data = new FormData();
+//     data.append("name", formdata.name);
+//     data.append("price", formdata.price);
+//     data.append("description", formdata.description);
+//     if (formdata.image) data.append("image", formdata.image);
+
+//     await dispatch(createMenu(data, token));
+
+//     // Reset form and force Upload component to remount
+//     setFormdata({
+//       name: "",
+//       price: "",
+//       description: "",
+//       image: null,
+//     });
+//     setUploadKey(prev => prev + 1);
+//   }, [formdata, token, dispatch]);
+
+//   const deleteHandler = useCallback((menuId) => {
+//     if (!window.confirm("Delete this dish?")) return;
+//     dispatch(deleteMenu(menuId, token));
+//   }, [token, dispatch]);
+
+//   const orderHandler = useCallback((item) => {
+//     dispatch(setMenuItem(item));
+//     navigate("/dashboard/order");
+//   }, [dispatch, navigate]);
+
+//   // Memoize filtered menu to avoid recalculation on every render
+//   const filteredMenu = useMemo(() => {
+//     return menu?.filter((m) => {
+//       if (!debouncedSearchQuery || debouncedSearchQuery.trim() === "") return true;
+//       const query = debouncedSearchQuery.toLowerCase().trim();
+//       const name = (m.name || "").toLowerCase();
+//       const description = (m.description || "").toLowerCase();
+//       return name.includes(query) || description.includes(query);
+//     });
+//   }, [menu, debouncedSearchQuery]);
+
+//   return (
+
+//     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-amber-50 px-6 py-10">
+
+//       <div className="max-w-7xl mx-auto">
+
+//         {/* HEADER */}
+
+//         <div className="flex items-center gap-4 mb-10">
+
+//           <div className="p-3 bg-amber-500 rounded-xl shadow-lg">
+//             <ChefHat className="text-white" size={30}/>
+//           </div>
+
+//           <div>
+//             <h1 className="text-4xl font-bold text-gradient-gold">
+//               Gourmet Menu
+//             </h1>
+
+//             <p className="text-gray-600">
+//               Premium dishes crafted by our chefs
+//             </p>
+//           </div>
+
+//         </div>
+
+//         {/* SEARCH */}
+
+//         <div className="bg-white rounded-xl border shadow-md mb-8 relative z-10">
+
+//           <div className="flex items-center gap-3 px-4 py-3">
+
+//             <Search className="text-gray-400" size={20}/>
+
+//             <input
+//               type="text"
+//               placeholder="Search dishes..."
+//               value={searchQuery}
+//               onChange={(e)=>setSearchQuery(e.target.value)}
+//               className="flex-1 outline-none text-gray-900 bg-transparent placeholder:text-gray-400"
+//               autoComplete="off"
+//             />
+
+//           </div>
+
+//         </div>
+
+//         {/* ADMIN PANEL */}
+
+//         {user?.accountType==="Admin" &&(
+
+//           <div className="glass-card rounded-3xl p-6 premium-shadow mb-8 max-w-xl text-black">
+
+//             <div className="flex items-center gap-2 mb-5">
+
+//               <Plus className="text-amber-500"/>
+
+//               <h2 className="text-xl font-bold">
+//                 Add New Dish
+//               </h2>
+
+//             </div>
+
+//             <form onSubmit={submitHandler} className="space-y-4">
+
+//               <input
+//               type="text"
+//               placeholder="Dish name"
+//               value={formdata.name}
+//               onChange={(e)=>setFormdata({...formdata,name:e.target.value})}
+//               className="w-full border rounded-lg px-3 py-2"
+//               required
+//               />
+
+//               <input
+//               type="number"
+//               placeholder="Price"
+//               value={formdata.price}
+//               onChange={(e)=>setFormdata({...formdata,price:e.target.value})}
+//               className="w-full border rounded-lg px-3 py-2"
+//               required
+//               />
+
+//               <textarea
+//               placeholder="Description"
+//               value={formdata.description}
+//               onChange={(e)=>setFormdata({...formdata,description:e.target.value})}
+//               className="w-full border rounded-lg px-3 py-2"
+//               required
+//               />
+
+//               <Upload
+//               key={uploadKey}
+//               label="Upload Image"
+//               onChange={(file)=>setFormdata({...formdata,image:file})}
+//               />
+
+//               <button
+//               type="submit"
+//               className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl font-semibold"
+//               >
+//                 Add Menu Item
+//               </button>
+
+//             </form>
+
+//           </div>
+
+//         )}
+
+//         {/* MENU GRID - FULL WIDTH */}
+
+//         {filteredMenu?.length === 0 ? (
+//           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+//             <div className="text-6xl mb-4">🔍</div>
+//             <h3 className="text-xl font-semibold text-gray-900 mb-2">
+//               {searchQuery.trim() ? "No dishes found" : "No menu items yet"}
+//             </h3>
+//             <p className="text-gray-500">
+//               {searchQuery.trim() 
+//                 ? `Try searching for something else` 
+//                 : "Add your first dish to get started"}
+//             </p>
+//           </div>
+//         ) : (
+//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//             {filteredMenu?.map((m,index) => (
+//               <MenuCard
+//                 key={m._id}
+//                 m={m}
+//                 index={index}
+//                 user={user}
+//                 deleteHandler={deleteHandler}
+//                 orderHandler={orderHandler}
+//               />
+//             ))}
+//           </div>
+//         )}
+
+//       </div>
+
+//     </div>
+
+//   );
+// }
+
+
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createMenu, getAllMenus, deleteMenu } from "../../services/menuApi";
@@ -620,61 +923,61 @@ function formatCurrency(amount) {
   }).format(Number(amount || 0));
 }
 
-// Memoized star rating component
 const StarRating = React.memo(() => (
   <div className="flex items-center gap-1 mb-3">
     {[...Array(5)].map((_,i)=>(
       <Star key={i} size={14} className="text-yellow-400 fill-yellow-400"/>
     ))}
-    <span className="text-sm text-gray-500 ml-1">
-      (4.8)
-    </span>
+    <span className="text-sm text-gray-500 ml-1">(4.8)</span>
   </div>
 ));
 
 StarRating.displayName = 'StarRating';
 
-// Memoized menu card component to prevent unnecessary re-renders
 const MenuCard = React.memo(({ m, index, user, deleteHandler, orderHandler }) => {
   return (
     <motion.div
       key={m._id}
       initial={{opacity:0,y:30}}
       animate={{opacity:1,y:0}}
-      transition={{delay:index*0.02, duration: 0.3}}
+      transition={{delay:index*0.02}}
       whileHover={{y:-8}}
       className="glass-card rounded-3xl overflow-hidden premium-shadow luxury-glow border"
     >
+
       {/* IMAGE */}
-      <div className="relative h-44 overflow-hidden">
+
+      <div className="relative h-36 sm:h-44 overflow-hidden">
         <img
           src={m.image}
           alt={m.name}
           loading="lazy"
           className="w-full h-full object-cover transition duration-500 hover:scale-110"
         />
-        <div className="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow">
-          ${formatCurrency(m.price)}
+
+        <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-amber-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold shadow">
+          ₹{formatCurrency(m.price)}
         </div>
       </div>
 
       {/* CONTENT */}
-      <div className="p-5">
-        <h3 className="text-lg font-bold mb-1">
+
+      <div className="p-3 sm:p-5">
+
+        <h3 className="text-sm sm:text-lg font-bold mb-1">
           {m.name}
         </h3>
 
         <StarRating />
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
           {m.description}
         </p>
 
-        {/* ACTION */}
         {user?.accountType==="Admin" ? (
           <button
             onClick={()=>deleteHandler(m._id)}
-            className="w-full flex items-center justify-center gap-2 border border-red-500 text-red-500 rounded-lg py-2 hover:bg-red-50"
+            className="w-full flex items-center justify-center gap-2 border border-red-500 text-red-500 rounded-lg py-1.5 sm:py-2 text-xs sm:text-sm hover:bg-red-50"
           >
             <Trash2 size={16}/>
             Delete
@@ -682,12 +985,14 @@ const MenuCard = React.memo(({ m, index, user, deleteHandler, orderHandler }) =>
         ) : (
           <button
             onClick={()=>orderHandler(m)}
-            className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:scale-[1.02]"
+            className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold hover:scale-[1.02]"
           >
             Order Now
           </button>
         )}
+
       </div>
+
     </motion.div>
   );
 });
@@ -725,18 +1030,20 @@ export default function MenuContainer() {
     data.append("name", formdata.name);
     data.append("price", formdata.price);
     data.append("description", formdata.description);
+
     if (formdata.image) data.append("image", formdata.image);
 
     await dispatch(createMenu(data, token));
 
-    // Reset form and force Upload component to remount
     setFormdata({
       name: "",
       price: "",
       description: "",
       image: null,
     });
+
     setUploadKey(prev => prev + 1);
+
   }, [formdata, token, dispatch]);
 
   const deleteHandler = useCallback((menuId) => {
@@ -749,58 +1056,62 @@ export default function MenuContainer() {
     navigate("/dashboard/order");
   }, [dispatch, navigate]);
 
-  // Memoize filtered menu to avoid recalculation on every render
   const filteredMenu = useMemo(() => {
     return menu?.filter((m) => {
-      if (!debouncedSearchQuery || debouncedSearchQuery.trim() === "") return true;
+
+      if (!debouncedSearchQuery || debouncedSearchQuery.trim()==="") return true;
+
       const query = debouncedSearchQuery.toLowerCase().trim();
       const name = (m.name || "").toLowerCase();
       const description = (m.description || "").toLowerCase();
+
       return name.includes(query) || description.includes(query);
+
     });
   }, [menu, debouncedSearchQuery]);
 
   return (
 
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-amber-50 px-6 py-10">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-amber-50 px-3 sm:px-6 py-6 sm:py-10">
 
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
 
-        <div className="flex items-center gap-4 mb-10">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-10">
 
-          <div className="p-3 bg-amber-500 rounded-xl shadow-lg">
-            <ChefHat className="text-white" size={30}/>
+          <div className="p-2 sm:p-3 bg-amber-500 rounded-xl shadow-lg">
+            <ChefHat className="text-white" size={24}/>
           </div>
 
           <div>
-            <h1 className="text-4xl font-bold text-gradient-gold">
+
+            <h1 className="text-2xl sm:text-4xl font-bold text-gradient-gold">
               Gourmet Menu
             </h1>
 
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-xs sm:text-base">
               Premium dishes crafted by our chefs
             </p>
+
           </div>
 
         </div>
 
         {/* SEARCH */}
 
-        <div className="bg-white rounded-xl border shadow-md mb-8 relative z-10">
+        <div className="bg-white rounded-xl border shadow-md mb-6 sm:mb-8 relative z-10">
 
-          <div className="flex items-center gap-3 px-4 py-3">
+          <div className="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3">
 
-            <Search className="text-gray-400" size={20}/>
+            <Search className="text-gray-400" size={18}/>
 
             <input
               type="text"
               placeholder="Search dishes..."
               value={searchQuery}
               onChange={(e)=>setSearchQuery(e.target.value)}
-              className="flex-1 outline-none text-gray-900 bg-transparent placeholder:text-gray-400"
-              autoComplete="off"
+              className="flex-1 outline-none text-gray-900 bg-transparent placeholder:text-gray-400 text-sm sm:text-base"
             />
 
           </div>
@@ -811,26 +1122,26 @@ export default function MenuContainer() {
 
         {user?.accountType==="Admin" &&(
 
-          <div className="glass-card rounded-3xl p-6 premium-shadow mb-8 max-w-xl text-black">
+          <div className="glass-card rounded-3xl p-4 sm:p-6 premium-shadow mb-6 sm:mb-8 max-w-xl text-black">
 
-            <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
 
               <Plus className="text-amber-500"/>
 
-              <h2 className="text-xl font-bold">
+              <h2 className="text-lg sm:text-xl font-bold">
                 Add New Dish
               </h2>
 
             </div>
 
-            <form onSubmit={submitHandler} className="space-y-4">
+            <form onSubmit={submitHandler} className="space-y-3 sm:space-y-4">
 
               <input
               type="text"
               placeholder="Dish name"
               value={formdata.name}
               onChange={(e)=>setFormdata({...formdata,name:e.target.value})}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border rounded-lg px-3 py-2 text-sm sm:text-base"
               required
               />
 
@@ -839,7 +1150,7 @@ export default function MenuContainer() {
               placeholder="Price"
               value={formdata.price}
               onChange={(e)=>setFormdata({...formdata,price:e.target.value})}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border rounded-lg px-3 py-2 text-sm sm:text-base"
               required
               />
 
@@ -847,7 +1158,7 @@ export default function MenuContainer() {
               placeholder="Description"
               value={formdata.description}
               onChange={(e)=>setFormdata({...formdata,description:e.target.value})}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border rounded-lg px-3 py-2 text-sm sm:text-base"
               required
               />
 
@@ -859,7 +1170,7 @@ export default function MenuContainer() {
 
               <button
               type="submit"
-              className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl font-semibold"
+              className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-2 sm:py-3 rounded-xl font-semibold text-sm sm:text-base"
               >
                 Add Menu Item
               </button>
@@ -870,23 +1181,31 @@ export default function MenuContainer() {
 
         )}
 
-        {/* MENU GRID - FULL WIDTH */}
+        {/* MENU GRID */}
 
-        {filteredMenu?.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        {filteredMenu?.length===0 ? (
+
+          <div className="bg-white rounded-xl border border-gray-200 p-8 sm:p-12 text-center">
+
+            <div className="text-4xl sm:text-6xl mb-4">🔍</div>
+
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               {searchQuery.trim() ? "No dishes found" : "No menu items yet"}
             </h3>
-            <p className="text-gray-500">
+
+            <p className="text-gray-500 text-sm sm:text-base">
               {searchQuery.trim() 
-                ? `Try searching for something else` 
+                ? "Try searching something else" 
                 : "Add your first dish to get started"}
             </p>
+
           </div>
+
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredMenu?.map((m,index) => (
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+
+            {filteredMenu?.map((m,index)=>(
               <MenuCard
                 key={m._id}
                 m={m}
@@ -896,12 +1215,13 @@ export default function MenuContainer() {
                 orderHandler={orderHandler}
               />
             ))}
+
           </div>
+
         )}
 
       </div>
 
     </div>
-
   );
 }

@@ -5,6 +5,7 @@
 // For PRODUCTION deployment: Use your deployed backend URL
 export const BASE_URL = "https://hotel-management-system-1-5e51.onrender.com/api/v1";
 export const API_ORIGIN = new URL(BASE_URL).origin;
+export const HEALTHCHECK_URL = `${API_ORIGIN}/api/v1/health`;
 
 export const auth={
     SIGNUP_API:BASE_URL+"/auth/signup",

@@ -91,16 +91,16 @@ export default function TableBooked() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/30 to-slate-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-amber-50/30 to-slate-50">
       
       {/* Hero Section with Background */}
-      <div className="relative h-[300px] md:h-[350px] mb-8 overflow-hidden">
+      <div className="relative h-55 sm:h-65 md:h-87.5 mb-6 sm:mb-8 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1600&auto=format&fit=crop"
           alt="Restaurant Interior"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-black/30"></div>
         
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
           <motion.div
@@ -108,20 +108,20 @@ export default function TableBooked() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <UtensilsCrossed size={48} className="text-amber-400" />
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <UtensilsCrossed size={30} className="text-amber-400" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-3">
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-3">
               My Reservations
             </h1>
-            <p className="text-lg md:text-xl text-gray-200">
+            <p className="text-sm sm:text-lg md:text-xl text-gray-200">
               {tablebookings?.length || 0} Active {tablebookings?.length === 1 ? 'Booking' : 'Bookings'}
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pb-10 sm:pb-12">
       {/* Empty State */}
       {!tablebookings || tablebookings?.length === 0 ? (
         <motion.div
@@ -142,7 +142,7 @@ export default function TableBooked() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => window.location.href = '/dashboard/table'}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              className="px-6 py-3 bg-linear-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
             >
               View Available Tables
             </motion.button>
@@ -151,7 +151,7 @@ export default function TableBooked() {
       ) : (
         /* Booking Grid */
         <div>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {tablebookings?.map((item, index) => {
               const rawStatus = item?.status || item?.paymentStatus || "pending";
               const bookingStatus = String(rawStatus).toLowerCase();
@@ -165,12 +165,12 @@ export default function TableBooked() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -6, transition: { duration: 0.3 } }}
-                  className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                  className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
                 >
-                  <div className="flex flex-col md:flex-row md:min-h-[400px]">
+                  <div className="flex flex-col md:flex-row md:min-h-100">
                     
                     {/* LEFT SIDE - Table Image */}
-                    <div className="relative md:w-1/2 h-[300px] md:min-h-[400px] overflow-hidden">
+                    <div className="relative md:w-1/2 h-48 sm:h-64 md:min-h-100 overflow-hidden">
                       <motion.img
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.7 }}
@@ -180,33 +180,35 @@ export default function TableBooked() {
                         }
                         alt={`Table ${item.table?.tableNumber}`}
                         className="w-full h-full object-cover object-center"
+                        loading="lazy"
+                        decoding="async"
                       />
                       
                       {/* Table Number Overlay */}
-                      <div className="absolute top-4 left-4">
-                        <div className="px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2">
-                          <UtensilsCrossed className="text-amber-500" size={16} />
-                          <span className="text-sm font-bold text-gray-800">
+                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                        <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-1.5 sm:gap-2">
+                          <UtensilsCrossed className="text-amber-500" size={14} />
+                          <span className="text-xs sm:text-sm font-bold text-gray-800">
                             Table {item.table?.tableNumber || item.tableNumber}
                           </span>
                         </div>
                       </div>
 
                       {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                         <StatusBadge status={bookingStatus} />
                       </div>
 
                       {/* Capacity Badge */}
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <div className="px-4 py-2 bg-black/60 backdrop-blur-sm rounded-xl flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Users className="text-white" size={16} />
-                            <span className="text-white text-sm font-semibold">
-                              Capacity: {item.table?.capacity || '2-4'} Guests
+                      <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4">
+                        <div className="px-3 py-2 sm:px-4 bg-black/60 backdrop-blur-sm rounded-xl flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                            <Users className="text-white shrink-0" size={14} />
+                            <span className="text-white text-xs sm:text-sm font-semibold truncate">
+                              {item.table?.capacity || '2-4'} Guests
                             </span>
                           </div>
-                          <span className="text-amber-400 text-xs font-bold uppercase tracking-wide">
+                          <span className="hidden sm:inline text-amber-400 text-xs font-bold uppercase tracking-wide">
                             {item.table?.capacity >= 8 ? "Large Party" : item.table?.capacity >= 5 ? "Family Style" : "Intimate"}
                           </span>
                         </div>
@@ -214,22 +216,22 @@ export default function TableBooked() {
                     </div>
 
                     {/* RIGHT SIDE - Booking Details */}
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                    <div className="md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col justify-between">
                       
                       {/* Top Section */}
                       <div>
                         {/* Reservation Header */}
-                        <div className="mb-6">
-                          <div className="flex items-center justify-between mb-3">
+                        <div className="mb-4 sm:mb-6">
+                          <div className="flex items-center justify-between gap-3 mb-2 sm:mb-3">
                             <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Reservation Details</p>
-                            <p className="text-xs text-gray-500 font-mono">
+                            <p className="hidden sm:block text-xs text-gray-500 font-mono">
                               #{item._id?.slice(-8).toUpperCase()}
                             </p>
                           </div>
-                          <h2 className="text-3xl font-bold text-gray-900">
+                          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
                             Table {item.table?.tableNumber || item.tableNumber}
                           </h2>
-                          <p className="text-gray-600 text-sm mt-1">
+                          <p className="text-gray-600 text-sm mt-1 leading-snug">
                             {item.table?.capacity >= 8 ? "Large Party Seating" : item.table?.capacity >= 5 ? "Family Dining Table" : "Intimate Dining Experience"}
                           </p>
                         </div>
@@ -238,12 +240,12 @@ export default function TableBooked() {
                         <div className="space-y-3">
                           
                           {/* Date & Time Row */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
+                          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-xl bg-blue-50 border border-blue-200">
                               <Calendar className="text-blue-600" size={18} />
                               <div>
-                                <p className="text-xs text-blue-700 font-semibold">Reservation Date</p>
-                                <p className="text-sm font-bold text-gray-900">
+                                <p className="text-[10px] sm:text-xs text-blue-700 font-semibold">Date</p>
+                                <p className="text-xs sm:text-sm font-bold text-gray-900">
                                   {item.date ? new Date(item.date).toLocaleDateString('en-US', { 
                                     month: 'short',
                                     day: 'numeric', 
@@ -253,11 +255,11 @@ export default function TableBooked() {
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50 border border-purple-200">
+                            <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-xl bg-purple-50 border border-purple-200">
                               <Clock className="text-purple-600" size={18} />
                               <div>
-                                <p className="text-xs text-purple-700 font-semibold">Time Slot</p>
-                                <p className="text-sm font-bold text-gray-900 capitalize">
+                                <p className="text-[10px] sm:text-xs text-purple-700 font-semibold">Time</p>
+                                <p className="text-xs sm:text-sm font-bold text-gray-900 capitalize">
                                   {item.timeSlot || "—"}
                                 </p>
                               </div>
@@ -265,11 +267,11 @@ export default function TableBooked() {
                           </div>
 
                           {/* Guests Count */}
-                          <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
                             <Users className="text-emerald-600" size={18} />
                             <div>
-                              <p className="text-xs text-emerald-700 font-semibold">Number of Guests</p>
-                              <p className="text-sm font-bold text-gray-900">
+                              <p className="text-[10px] sm:text-xs text-emerald-700 font-semibold">Guests</p>
+                              <p className="text-xs sm:text-sm font-bold text-gray-900">
                                 {item.guests || item.guestCount || "—"} guests
                               </p>
                             </div>
@@ -278,30 +280,30 @@ export default function TableBooked() {
                       </div>
 
                       {/* Bottom Section - Price & Actions */}
-                      <div className="space-y-4 mt-6">
+                      <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
                         
                         {/* Price Display */}
-                        <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-linear-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-xs text-emerald-700 font-semibold mb-1">Total Amount</p>
-                              <p className="text-3xl font-bold text-emerald-600">
+                              <p className="text-2xl sm:text-3xl font-bold text-emerald-600 leading-none">
                                 ${(item.amount || item.totalPrice || item.table?.price || 0).toLocaleString()}
                               </p>
-                              <p className="text-xs text-emerald-600 mt-1">Includes taxes & fees</p>
+                              <p className="hidden sm:block text-xs text-emerald-600 mt-1">Includes taxes & fees</p>
                             </div>
                             {canPay ? (
                               <motion.button
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => handlePayment(item)}
-                                className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                                className="hidden sm:flex items-center gap-2 px-4 py-3 bg-linear-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
                               >
                                 <CreditCard size={18} />
                                 Pay Now
                               </motion.button>
                             ) : (
-                              <div className="p-3 bg-emerald-500 rounded-xl">
+                              <div className="hidden sm:block p-3 bg-emerald-500 rounded-xl">
                                 <DollarSign className="text-white" size={24} />
                               </div>
                             )}
@@ -316,25 +318,27 @@ export default function TableBooked() {
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => handlePayment(item)}
-                              className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-green-500/50 transition-all"
+                              className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-linear-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-green-500/50 transition-all text-sm sm:text-base"
                             >
-                              <CreditCard size={20} />
+                              <CreditCard size={18} />
                               <span>Pay Now</span>
                             </motion.button>
                           ) : bookingStatus === "paid" || bookingStatus === "active" ? (
-                            <div className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-emerald-200 bg-emerald-50 rounded-2xl text-emerald-700 font-bold">
-                              <CheckCircle size={20} />
+                            <div className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-2 border-emerald-200 bg-emerald-50 rounded-2xl text-emerald-700 font-bold text-sm sm:text-base">
+                              <CheckCircle size={18} />
                               <span>Payment Completed</span>
                             </div>
                           ) : bookingStatus === "cancelled" ? (
-                            <div className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-red-200 bg-red-50 rounded-2xl text-red-700 font-bold">
-                              <XCircle size={20} />
-                              <span>Reservation Cancelled</span>
+                            <div className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-2 border-red-200 bg-red-50 rounded-2xl text-red-700 font-bold text-sm sm:text-base">
+                              <XCircle size={18} />
+                              <span className="sm:hidden">Cancelled</span>
+                              <span className="hidden sm:inline">Reservation Cancelled</span>
                             </div>
                           ) : (
-                            <div className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-amber-200 bg-amber-50 rounded-2xl text-amber-700 font-bold">
-                              <AlertCircle size={20} />
-                              <span>Payment Failed - Try Again</span>
+                            <div className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-2 border-amber-200 bg-amber-50 rounded-2xl text-amber-700 font-bold text-sm sm:text-base">
+                              <AlertCircle size={18} />
+                              <span className="sm:hidden">Retry Payment</span>
+                              <span className="hidden sm:inline">Payment Failed - Try Again</span>
                             </div>
                           )}
 
@@ -344,10 +348,11 @@ export default function TableBooked() {
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => handleCancel(item._id)}
-                              className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-red-500 text-red-600 font-semibold rounded-2xl hover:bg-red-50 transition-all"
+                              className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-2 border-red-500 text-red-600 font-semibold rounded-2xl hover:bg-red-50 transition-all text-sm sm:text-base"
                             >
                               <X size={18} />
-                              <span>Cancel Reservation</span>
+                              <span className="sm:hidden">Cancel</span>
+                              <span className="hidden sm:inline">Cancel Reservation</span>
                             </motion.button>
                           )}
                         </div>

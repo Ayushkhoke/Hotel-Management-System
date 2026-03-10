@@ -47,39 +47,25 @@
 // }
 
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProfileDropdown from "./ProfileDropdown";
 
 export default function Navbar() {
   const { token } = useSelector((state) => state.auth);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
 
   const navStyle =
     "relative text-sm font-medium tracking-wide hover:text-yellow-400 transition duration-300 after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-yellow-400 after:transition-all after:duration-300 hover:after:w-full";
 
   return (
-    <header className="fixed top-0 w-full z-90 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <header className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-3">
 
         {/* LOGO */}
         <Link
           to="/"
-          className="text-2xl font-bold text-yellow-400 tracking-wider"
+          className="text-lg sm:text-2xl font-bold text-yellow-400 tracking-wide sm:tracking-wider truncate"
         >
           Royal Grand
         </Link>
@@ -114,65 +100,26 @@ export default function Navbar() {
         </nav>
 
         {/* MOBILE MENU BUTTON / PROFILE */}
-        <div className="md:hidden flex items-center gap-3">
-          {token && <ProfileDropdown />}
-        </div>
-      </div>
-
-      {/* MOBILE MENU OVERLAY */}
-      {mobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-80 md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* MOBILE MENU */}
-      <div className={`
-        fixed top-18.25 right-0 bottom-0 w-[75vw] max-w-70 z-85
-        bg-black/95 backdrop-blur-xl
-        transform-gpu will-change-transform transition-transform duration-300 ease-out
-        md:hidden
-        ${mobileOpen ? 'translate-x-0 border-l border-yellow-500/20' : 'translate-x-[110%] border-l-0'}
-      `}>
-        <div className="px-6 py-6 space-y-6 text-left overflow-y-auto h-full">
-
-          <NavLink
-            to="/"
-            className="block py-2 text-base hover:text-yellow-400 transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            Home
-          </NavLink>
-
+        <div className="md:hidden flex items-center gap-2 min-w-0">
           {!token && (
-            <>
+            <div className="flex items-center gap-2">
               <NavLink
                 to="/login"
-                className="block py-2 text-base hover:text-yellow-400 transition-colors"
-                onClick={() => setMobileOpen(false)}
+                className="rounded-md border border-yellow-500/40 px-3 py-1.5 text-xs font-medium text-yellow-300"
               >
                 Login
               </NavLink>
-
               <NavLink
                 to="/signup"
-                className="block py-2 text-base hover:text-yellow-400 transition-colors"
-                onClick={() => setMobileOpen(false)}
+                className="rounded-md bg-yellow-400 px-3 py-1.5 text-xs font-semibold text-black"
               >
                 Signup
               </NavLink>
-            </>
+            </div>
           )}
 
           {token && (
-            <NavLink
-              to="/dashboard"
-              className="block py-2 text-base hover:text-yellow-400 transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              Dashboard
-            </NavLink>
+            <ProfileDropdown />
           )}
         </div>
       </div>

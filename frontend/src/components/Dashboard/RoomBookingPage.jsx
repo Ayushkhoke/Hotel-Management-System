@@ -128,7 +128,7 @@ export default function RoomBookingPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-x-hidden">
 
       {/* Background Image */}
       <div
@@ -142,7 +142,7 @@ export default function RoomBookingPage() {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-      <div className="relative max-w-6xl mx-auto px-4 py-10">
+      <div className="relative max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
 
         {/* Back Button */}
         <button
@@ -153,10 +153,10 @@ export default function RoomBookingPage() {
           Back to Rooms
         </button>
 
-        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-8">
+        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-5 sm:gap-8">
 
           {/* IMAGE GALLERY */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 shadow-xl">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-3 sm:p-4 shadow-xl">
 
             <img
               src={
@@ -164,11 +164,11 @@ export default function RoomBookingPage() {
                 "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80"
               }
               alt={`Room ${room.roomNumber}`}
-              className="w-full h-96 object-cover rounded-xl transition hover:scale-[1.02]"
+              className="w-full h-60 sm:h-80 md:h-96 object-cover rounded-xl transition hover:scale-[1.02]"
             />
 
             {!!roomImages.length && (
-              <div className="mt-4 grid grid-cols-5 gap-3">
+              <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3">
                 {roomImages.map((img, index) => (
                   <button
                     key={index}
@@ -182,7 +182,7 @@ export default function RoomBookingPage() {
                     <img
                       src={img}
                       alt={`Room ${room.roomNumber} ${index + 1}`}
-                      className="w-full h-20 object-cover hover:opacity-80"
+                      className="w-full h-14 sm:h-20 object-cover hover:opacity-80"
                     />
                   </button>
                 ))}
@@ -191,9 +191,9 @@ export default function RoomBookingPage() {
           </div>
 
           {/* ROOM INFO CARD */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-8 shadow-xl text-white">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-5 sm:p-8 shadow-xl text-white">
 
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">
               Room {room.roomNumber}
             </h1>
 
@@ -209,7 +209,7 @@ export default function RoomBookingPage() {
 
             {/* Price */}
             <div className="mb-8">
-              <p className="text-4xl font-bold text-amber-400">
+              <p className="text-3xl sm:text-4xl font-bold text-amber-400">
                 ${room.pricePerNight}
               </p>
               <p className="text-sm text-gray-400">per night</p>
