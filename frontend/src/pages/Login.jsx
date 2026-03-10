@@ -53,14 +53,21 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [googleStatus, setGoogleStatus] = useState("loading");
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    if (!googleClientId) return;
+    if (!googleClientId) {
+      setGoogleStatus("missing-client-id");
+      return;
+    }
 
     const initializeGoogle = () => {
-      if (!window.google?.accounts?.id) return;
+      if (!window.google?.accounts?.id) {
+        setGoogleStatus("script-not-ready");
+        return;
+      }
       
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -88,6 +95,9 @@ export default function Login() {
             logo_alignment: "left"
           }
         );
+        setGoogleStatus("ready");
+      } else {
+        setGoogleStatus("container-missing");
       }
     };
 
@@ -101,6 +111,7 @@ export default function Login() {
     script.async = true;
     script.defer = true;
     script.onload = initializeGoogle;
+    script.onerror = () => setGoogleStatus("script-load-failed");
     document.body.appendChild(script);
 
     const rerenderOnResize = () => initializeGoogle();
@@ -209,6 +220,14 @@ backgroundImage:
 
           {/* Google Sign-In Button (Rendered by Google) */}
           <div id="google-signin-button" className="w-full flex justify-center"></div>
+          {googleStatus !== "ready" && (
+            <p className="text-xs text-center text-red-600 mt-2">
+              {googleStatus === "missing-client-id" && "Google Sign-In is disabled: missing VITE_GOOGLE_CLIENT_ID in deployment env."}
+              {googleStatus === "script-load-failed" && "Google script failed to load. Check network/CSP/ad-block settings."}
+              {googleStatus === "script-not-ready" && "Google Sign-In is still initializing."}
+              {googleStatus === "container-missing" && "Google button container not found."}
+            </p>
+          )}
         </form>
 
         {/* Footer */}

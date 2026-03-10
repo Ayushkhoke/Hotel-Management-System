@@ -409,14 +409,21 @@ export default function Signup() {
   });
 
   const [preview, setPreview] = useState(null);
+  const [googleStatus, setGoogleStatus] = useState("loading");
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    if (!googleClientId) return;
+    if (!googleClientId) {
+      setGoogleStatus("missing-client-id");
+      return;
+    }
 
     const initializeGoogle = () => {
-      if (!window.google?.accounts?.id) return;
+      if (!window.google?.accounts?.id) {
+        setGoogleStatus("script-not-ready");
+        return;
+      }
       
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -444,6 +451,9 @@ export default function Signup() {
             logo_alignment: "left"
           }
         );
+        setGoogleStatus("ready");
+      } else {
+        setGoogleStatus("container-missing");
       }
     };
 
@@ -457,6 +467,7 @@ export default function Signup() {
     script.async = true;
     script.defer = true;
     script.onload = initializeGoogle;
+    script.onerror = () => setGoogleStatus("script-load-failed");
     document.body.appendChild(script);
 
     const rerenderOnResize = () => initializeGoogle();
@@ -640,6 +651,14 @@ export default function Signup() {
 
             {/* Google Sign-Up Button (Rendered by Google) */}
             <div id="google-signup-button" className="w-full flex justify-center"></div>
+            {googleStatus !== "ready" && (
+              <p className="text-xs text-center text-red-600 mt-2">
+                {googleStatus === "missing-client-id" && "Google Sign-Up is disabled: missing VITE_GOOGLE_CLIENT_ID in deployment env."}
+                {googleStatus === "script-load-failed" && "Google script failed to load. Check network/CSP/ad-block settings."}
+                {googleStatus === "script-not-ready" && "Google Sign-Up is still initializing."}
+                {googleStatus === "container-missing" && "Google button container not found."}
+              </p>
+            )}
 
             <p className="text-sm text-center text-gray-500 mt-4">
               Already have an account?{" "}
