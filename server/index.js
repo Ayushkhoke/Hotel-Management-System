@@ -97,25 +97,35 @@ database.connect();
 
 const PORT = process.env.PORT || 4000;
 
-// app.use(cors({
-//   origin: ["http://localhost:3000", "http://localhost:5173","https://hotel-management-system-silk-sigma.vercel.app"],
-//   credentials: true
-// }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://hotel-management-system-silk-sigma.vercel.app",
+  "https://hotel-management-system-nrzc1vfaf-spartan253s-projects.vercel.app",
+];
 
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server calls or curl/postman without origin
+    if (!origin) return callback(null, true);
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://hotel-management-system-silk-sigma.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-  })
-);
+    const isExactMatch = allowedOrigins.includes(origin);
+    const isVercelPreview = /\.vercel\.app$/.test(origin);
 
-app.options(/.*/, cors());
+    if (isExactMatch || isVercelPreview) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
