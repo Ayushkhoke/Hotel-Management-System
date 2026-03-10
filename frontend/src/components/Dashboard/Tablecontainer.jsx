@@ -254,7 +254,7 @@ export default function Tablecontainer() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-          <section className="space-y-6">
+          <section className="space-y-4 sm:space-y-6">
             <div className="bg-white rounded-xl border border-gray-200 p-3">
               <input
                 type="text"
@@ -266,7 +266,7 @@ export default function Tablecontainer() {
             </div>
 
             <div
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
             >
             {sortedTables.map((t) => {
               const image =
@@ -289,16 +289,17 @@ export default function Tablecontainer() {
               
               const oldPrice = Math.round(tablePrice / (1 - discountPercent / 100));
               const seatingTag = getSeatingTag(t.capacity);
+              const tableStatus = normalizeTableStatus(t.status);
 
               return (
                 <article 
                   key={t._id} 
-                  className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr]">
+                  <div className="grid grid-cols-1 lg:grid-cols-[44%_56%]">
                     
                     {/* Image Section */}
-                    <div className="relative h-56 sm:h-64 lg:h-auto bg-gray-100">
+                    <div className="relative h-44 sm:h-52 md:h-60 lg:h-full bg-gray-100">
                       <img
                         src={image}
                         alt={`Table ${t.tableNumber}`}
@@ -306,55 +307,72 @@ export default function Tablecontainer() {
                         loading="lazy"
                         decoding="async"
                       />
-                      <div className="absolute top-3 left-3 bg-emerald-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+
+                      <div className="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
                         {seatingTag}
                       </div>
+
+                      <div className="absolute top-3 right-3">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-semibold text-white ${
+                            tableStatus === "available" ? "bg-amber-500" : "bg-gray-600"
+                          }`}
+                        >
+                          {tableStatus === "available" ? "Pending" : "Unavailable"}
+                        </span>
+                      </div>
+
+                      {/* Keep image clean on mobile; actions are in the card footer buttons. */}
                     </div>
 
-                    <div className="p-5 md:p-6">
-                      <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
+                    <div className="p-4 sm:p-5 md:p-6">
+                      <div className="flex flex-col gap-4">
                         <div className="flex-1">
-                          <h2 className="text-xl sm:text-2xl font-bold leading-tight">Table {t.tableNumber} Dining Slot</h2>
-                          <p className="text-gray-600 mt-1">Capacity {t.capacity} guests - Indoor dining - Premium service</p>
+                          <p className="text-xs text-gray-500">📍 Luxury Hotel</p>
+                          <h2 className="text-2xl sm:text-3xl font-bold leading-tight text-gray-900 mt-1">
+                            Table #{t.tableNumber}
+                          </h2>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Capacity {t.capacity} guests • City View
+                          </p>
 
-                          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-700">
                             <span className="inline-flex items-center bg-emerald-600 text-white px-2.5 py-0.5 rounded-sm font-semibold">
                               {(3.9 + (Number(t.tableNumber || 1) % 8) / 10).toFixed(1)}
                             </span>
                             <span>Reception</span>
-                            <span>Family Space</span>
-                            <span>Fast Service</span>
-                            <span className="text-gray-500">+ 3 more</span>
+                            <span className="hidden sm:inline">Family Space</span>
                           </div>
 
-                          <div className="mt-5">
-                            <div className="flex flex-wrap items-baseline gap-2">
-                              <span className="text-3xl sm:text-4xl font-bold text-gray-900">
+                          <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300">
+                            <p className="text-xs text-gray-600 mb-1">Total Price</p>
+                            <div className="flex flex-wrap items-end gap-2">
+                              <span className="text-3xl font-bold text-emerald-600 leading-none">
                                 ${formatCurrency(tablePrice)}
                               </span>
-                              <span className="text-xl sm:text-2xl line-through text-gray-400 font-semibold">
+                              <span className="text-sm text-gray-500">/ slot</span>
+                              <span className="hidden sm:inline text-lg line-through text-gray-400 font-semibold">
                                 ${formatCurrency(oldPrice)}
                               </span>
-                              <span className="text-base sm:text-xl text-orange-500 font-semibold">
+                              <span className="text-sm text-orange-500 font-semibold">
                                 {discountPercent}% off
                               </span>
                             </div>
-                            <p className="text-sm text-gray-500 mt-1">per table booking slot</p>
                           </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end w-full lg:w-auto">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full">
                           {user?.accountType === "Admin" ? (
                             <>
                               <button
                                 onClick={() => editHandler(t)}
-                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-indigo-500 text-indigo-700 font-semibold hover:bg-indigo-50 transition"
+                                className="w-full sm:flex-1 px-4 py-2.5 rounded-md border border-indigo-500 text-indigo-700 text-sm font-semibold hover:bg-indigo-50 transition"
                               >
                                 Edit Table
                               </button>
                               <button
                                 onClick={() => deleteHandler(t._id, t.tableNumber)}
-                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-red-500 text-red-700 font-semibold hover:bg-red-50 transition"
+                                className="w-full sm:flex-1 px-4 py-2.5 rounded-md border border-red-500 text-red-700 text-sm font-semibold hover:bg-red-50 transition"
                               >
                                 Delete Table
                               </button>
@@ -363,16 +381,16 @@ export default function Tablecontainer() {
                             <>
                               <button
                                 onClick={() => handleBookTable(t._id)}
-                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md border border-gray-400 text-gray-800 font-semibold hover:bg-gray-50 transition"
+                                className="w-full sm:flex-1 px-4 py-2.5 rounded-md border border-gray-400 text-gray-800 text-sm font-semibold hover:bg-gray-50 transition"
                               >
                                 View Details
                               </button>
                               <button
                                 onClick={() => handleBookTable(t._id)}
-                                disabled={t.status !== "available"}
-                                className="w-full lg:w-auto px-4 sm:px-6 py-2.5 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                disabled={tableStatus !== "available"}
+                                className="w-full sm:flex-1 px-4 py-2.5 rounded-md bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition disabled:opacity-60 disabled:cursor-not-allowed"
                               >
-                                {t.status === "available" ? "Reserve Now" : "Unavailable"}
+                                {tableStatus === "available" ? "Pay Now" : "Unavailable"}
                               </button>
                             </>
                           )}
