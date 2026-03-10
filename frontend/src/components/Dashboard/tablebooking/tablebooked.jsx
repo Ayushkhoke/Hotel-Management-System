@@ -28,7 +28,7 @@
 //           <p><strong>Time Slot:</strong> {booking.timeSlot}</p>
 //           <p><strong>Status:</strong> {booking.status}</p>
 //           <p><strong>Guests:</strong> {booking.guests}</p>
-//           <p><strong>Amount:</strong> ₹{booking.amount}</p>
+//           <p><strong>Amount:</strong> ${booking.amount}</p>
 //         </div>
 //       ))}
 //     </div>
@@ -125,7 +125,7 @@ export default function TableBooked() {
               </p>
 
               <p className="text-xl font-bold text-green-600 mt-2">
-                ₹{booking.amount}
+                ${booking.amount}
               </p>
 
               {/* Status Badge */}

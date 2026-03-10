@@ -168,3 +168,26 @@ export function deleteRoom(roomid, token) {
     }
   };
 }
+
+// GET AVAILABLE ROOMS FOR DATE RANGE
+export async function getAvailableRooms(checkIn, checkOut, token) {
+  try {
+    const url = `${room.GET_AVAILABLE_ROOMS_API}?checkIn=${checkIn}&checkOut=${checkOut}`;
+    const res = await apiConnector(
+      "GET",
+      url,
+      null,
+      { Authorization: `Bearer ${token}` }
+    );
+
+    if (!res.data.success) {
+      throw new Error(res.data.message);
+    }
+
+    return res.data.rooms || [];
+  } catch (error) {
+    console.log("GET AVAILABLE ROOMS ERROR", error);
+    toast.error(error.response?.data?.message || "Could not fetch available rooms");
+    return [];
+  }
+}

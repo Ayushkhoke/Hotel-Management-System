@@ -68,11 +68,150 @@ button:focus-visible {
 } */
 
 @import "tailwindcss";
-.input {
-  @apply w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500;
+
+/* ==============================================
+   LUXURY HOTEL MANAGEMENT - PREMIUM UI THEME
+   ============================================== */
+
+/* Custom CSS Variables for Luxury Palette */
+:root {
+  --color-gold: #F59E0B;
+  --color-gold-light: #FBBF24;
+  --color-gold-dark: #D97706;
+  --color-dark: #0F172A;
+  --color-dark-light: #1E293B;
+  --color-emerald: #10B981;
+  --color-emerald-light: #34D399;
+  --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  --gradient-luxury: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
 }
 
-/* Responsive helpers */
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth !important;
+  overflow-x: hidden;
+}
+
+body {
+  @apply antialiased;
+  font-family: 'Inter', 'system-ui', -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ============== PREMIUM INPUTS ============== */
+.input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg 
+         focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
+         transition-all duration-300;
+}
+
+.input:hover {
+  @apply border-amber-400;
+}
+
+/* ============== LUXURY BUTTONS ============== */
+.btn-premium {
+  @apply px-6 py-3 rounded-lg font-semibold 
+         bg-gradient-to-r from-amber-500 to-orange-500
+         text-white shadow-lg hover:shadow-xl
+         transform hover:-translate-y-0.5
+         transition-all duration-300;
+}
+
+.btn-outline-premium {
+  @apply px-6 py-3 rounded-lg font-semibold
+         border-2 border-amber-500 text-amber-600
+         hover:bg-amber-500 hover:text-white
+         transition-all duration-300;
+}
+
+.btn-dark {
+  @apply px-6 py-3 rounded-lg font-semibold
+         bg-slate-900 text-white
+         hover:bg-slate-800 shadow-lg hover:shadow-xl
+         transform hover:-translate-y-0.5
+         transition-all duration-300;
+}
+
+/* ============== CARD STYLES ============== */
+.card-premium {
+  @apply bg-white rounded-2xl shadow-lg border border-gray-100
+         hover:shadow-2xl hover:-translate-y-1
+         transition-all duration-300;
+}
+
+.card-glass {
+  @apply bg-white/10 backdrop-blur-xl 
+         border border-white/20 rounded-2xl
+         shadow-xl;
+}
+
+/* ============== GRADIENT TEXT ============== */
+.text-gradient-gold {
+  @apply bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500
+         bg-clip-text text-transparent font-bold;
+}
+
+.text-gradient-luxury {
+  @apply bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900
+         bg-clip-text text-transparent font-bold;
+}
+
+/* ============== PREMIUM BADGES ============== */
+.badge-gold {
+  @apply inline-flex items-center px-3 py-1 rounded-full
+         bg-gradient-to-r from-amber-500 to-orange-500
+         text-white text-sm font-semibold shadow-md;
+}
+
+.badge-success {
+  @apply inline-flex items-center px-3 py-1 rounded-full
+         bg-emerald-100 text-emerald-700 border border-emerald-300
+         text-sm font-semibold;
+}
+
+.badge-pending {
+  @apply inline-flex items-center px-3 py-1 rounded-full
+         bg-amber-100 text-amber-700 border border-amber-300
+         text-sm font-semibold;
+}
+
+.badge-cancelled {
+  @apply inline-flex items-center px-3 py-1 rounded-full
+         bg-red-100 text-red-700 border border-red-300
+         text-sm font-semibold;
+}
+
+/* ============== ANIMATIONS ============== */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+}
+
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+/* ============== RESPONSIVE HELPERS ============== */
 .container {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
@@ -89,7 +228,6 @@ img, video {
 
 /* Small device tweaks */
 @media (max-width: 640px) {
-  /* Reduce large paddings/margins for mobile */
   .p-8 { padding: 1.25rem !important; }
   .p-6 { padding: 1rem !important; }
   .px-10 { padding-left: 1rem !important; padding-right: 1rem !important; }
@@ -100,6 +238,56 @@ img, video {
   /* Make fixed-height cards adapt */
   .h-52 { height: 14rem !important; }
   .h-44 { height: 12rem !important; }
+}
+
+/* ===== Scroll Animations ===== */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+}
+
+.animate-on-scroll.slide-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.animate-on-scroll.slide-right {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-on-scroll.fade-up {
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 /* Medium devices tweaks */

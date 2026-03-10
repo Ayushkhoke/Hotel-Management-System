@@ -1,6 +1,7 @@
 const User = require("../model/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const axios = require("axios");
 
 
 exports.signup=async(req,res)=>{
@@ -67,6 +68,14 @@ exports.login=async(req,res)=>{
         if(!user){
             return res.status(400).json({message:"User does not exist"});
         }
+
+        if (user.authProvider === "google" || !user.password) {
+          return res.status(400).json({
+            success: false,
+            message: "This account uses Google sign-in. Please continue with Google.",
+          });
+        }
+
         const payload={
             id:user._id,
             email:user.email,
@@ -103,6 +112,103 @@ exports.login=async(req,res)=>{
         });
     }
 }
+
+exports.googleAuth = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Google token is required",
+      });
+    }
+
+    const tokenInfoResponse = await axios.get("https://oauth2.googleapis.com/tokeninfo", {
+      params: { id_token: idToken },
+    });
+
+    const tokenInfo = tokenInfoResponse.data;
+
+    if (!tokenInfo?.email || tokenInfo.email_verified !== "true") {
+      return res.status(401).json({
+        success: false,
+        message: "Google account email is not verified",
+      });
+    }
+
+    if (process.env.GOOGLE_CLIENT_ID && tokenInfo.aud !== process.env.GOOGLE_CLIENT_ID) {
+      return res.status(401).json({
+        success: false,
+        message: "Google token audience mismatch",
+      });
+    }
+
+    const email = tokenInfo.email;
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const fullName = tokenInfo.name || "Google User";
+      const [first = "Google", ...rest] = fullName.trim().split(" ");
+      const last = rest.join(" ") || "User";
+
+      user = await User.create({
+        firstname: tokenInfo.given_name || first,
+        lastname: tokenInfo.family_name || last,
+        email,
+        accountType: "User",
+        phone: "0000000000",
+        image: tokenInfo.picture || `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(first)}`,
+        authProvider: "google",
+        googleId: tokenInfo.sub,
+      });
+    } else {
+      if (!user.authProvider) {
+        user.authProvider = "local";
+      }
+
+      if (!user.googleId) {
+        user.googleId = tokenInfo.sub;
+      }
+
+      if (!user.image && tokenInfo.picture) {
+        user.image = tokenInfo.picture;
+      }
+
+      await user.save();
+    }
+
+    const payload = {
+      id: user._id,
+      email: user.email,
+      accountType: user.accountType,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    user.token = token;
+    user.password = undefined;
+    user.confirmpassword = undefined;
+
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+
+    return res.cookie("token", token, options).status(200).json({
+      success: true,
+      message: "Google login successful",
+      token,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Google authentication failed",
+      error: error.message,
+    });
+  }
+};
 
 
 // exports.changePassword = async (req, res) => {
@@ -192,6 +298,55 @@ exports.changePassword = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
+    });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { firstname, lastname, phone } = req.body;
+    const image = req.file ? req.file.path : null;
+
+    if (!firstname || !lastname) {
+      return res.status(400).json({
+        success: false,
+        message: "First name and last name are required",
+      });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update fields
+    user.firstname = firstname;
+    user.lastname = lastname;
+    if (phone) user.phone = phone;
+    if (image) user.image = image;
+
+    await user.save();
+
+    // Return updated user without password
+    user.password = undefined;
+    user.confirmpassword = undefined;
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+      error: error.message,
     });
   }
 };

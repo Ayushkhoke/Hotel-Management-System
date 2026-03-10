@@ -122,7 +122,7 @@
 //                     {r.type} • Capacity {r.capacity}
 //                   </p>
 //                   <p className="text-sm text-slate-500">
-//                     ₹{r.pricePerNight} / night
+//                     ${r.pricePerNight} / night
 //                   </p>
 //                 </div>
 //               </div>
@@ -385,7 +385,7 @@
 //                 {r.type} • Capacity {r.capacity}
 //               </p>
 //               <p className="text-sm text-slate-500">
-//                 ₹{r.pricePerNight} / night
+//                 ${r.pricePerNight} / night
 //               </p>
 //             </div>
 //           </div>
@@ -647,7 +647,7 @@
 //                     {r.type} • Capacity {r.capacity}
 //                   </p>
 //                   <p className="text-sm text-slate-500">
-//                     ₹{r.pricePerNight} / night
+//                     ${r.pricePerNight} / night
 //                   </p>
 //                 </div>
 //               </div>
@@ -909,7 +909,7 @@
 //                     {r.type} • Capacity {r.capacity}
 //                   </p>
 //                   <p className="text-sm text-gray-500">
-//                     ₹{r.pricePerNight} / night
+//                     ${r.pricePerNight} / night
 //                   </p>
 //                 </div>
 //               </div>
@@ -1196,7 +1196,7 @@
 //                       {r.type} • Capacity {r.capacity}
 //                     </p>
 //                     <p className="text-green-400 font-medium mt-1">
-//                       ₹{r.pricePerNight} / night
+//                       ${r.pricePerNight} / night
 //                     </p>
 //                   </div>
 //                 </div>
@@ -1472,7 +1472,7 @@
 //                   </p>
 
 //                   <p className="text-2xl text-green-400 font-semibold">
-//                     ₹{r.pricePerNight} / night
+//                     ${r.pricePerNight} / night
 //                   </p>
 
 //                   <span
@@ -1607,8 +1607,54 @@ import {
   deleteRoom,
 } from "../../services/roomApi";
 import { setRoom, setEditRoom } from "../../slices/roomSlice";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Upload from "./Upload";
-import RoomBooking from "./RoomBooking";
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 0,
+  }).format(Number(amount || 0));
+}
+
+function getRoomRating(roomNumber) {
+  const base = Number(roomNumber) || 1;
+  return (3.8 + (base % 12) / 10).toFixed(1);
+}
+
+function convertWordToNumber(text) {
+  const numberWords = {
+    'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
+    'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9',
+    'ten': '10', 'eleven': '11', 'twelve': '12', 'thirteen': '13',
+    'fourteen': '14', 'fifteen': '15', 'sixteen': '16', 'seventeen': '17',
+    'eighteen': '18', 'nineteen': '19', 'twenty': '20'
+  };
+  
+  const lowerText = text.toLowerCase().trim();
+  
+  // Check if entire text is a number word
+  if (numberWords[lowerText]) {
+    return numberWords[lowerText];
+  }
+  
+  // Check if text contains "room" and then a number word
+  const words = lowerText.split(/\s+/);
+  for (const word of words) {
+    if (numberWords[word]) {
+      return numberWords[word];
+    }
+  }
+  
+  return text;
+}
+
+function getRoomImages(room) {
+  if (Array.isArray(room?.images) && room.images.length) {
+    return room.images.filter(Boolean);
+  }
+
+  return room?.image ? [room.image] : [];
+}
 
 export default function RoomContainer() {
   const { token, user } = useSelector((state) => state.auth);
@@ -1617,9 +1663,13 @@ export default function RoomContainer() {
   const navigate = useNavigate();
 
   const [searchRoomNo, setSearchRoomNo] = useState("");
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState(null);
   const [resetKey, setResetKey] = useState(0);
+  const [galleryState, setGalleryState] = useState({
+    open: false,
+    images: [],
+    index: 0,
+    title: "",
+  });
 
   const [formdata, setFormdata] = useState({
     roomNumber: "",
@@ -1627,7 +1677,7 @@ export default function RoomContainer() {
     capacity: "",
     pricePerNight: "",
     isAvailable: true,
-    image: null,
+    images: [],
   });
 
   useEffect(() => {
@@ -1646,10 +1696,14 @@ export default function RoomContainer() {
     e.preventDefault();
     const data = new FormData();
 
-    Object.keys(formdata).forEach((key) => {
-      if (formdata[key] !== null) {
-        data.append(key, formdata[key]);
-      }
+    data.append("roomNumber", formdata.roomNumber);
+    data.append("type", formdata.type);
+    data.append("capacity", formdata.capacity);
+    data.append("pricePerNight", formdata.pricePerNight);
+    data.append("isAvailable", formdata.isAvailable);
+
+    formdata.images.forEach((file) => {
+      data.append("images", file);
     });
 
     if (editRoom && room?._id) {
@@ -1665,7 +1719,7 @@ export default function RoomContainer() {
       capacity: "",
       pricePerNight: "",
       isAvailable: true,
-      image: null,
+      images: [],
     });
 
     setResetKey((prev) => prev + 1);
@@ -1682,7 +1736,7 @@ export default function RoomContainer() {
       capacity: selectedRoom.capacity,
       pricePerNight: selectedRoom.pricePerNight,
       isAvailable: selectedRoom.isAvailable,
-      image: null,
+      images: [],
     });
 
     setResetKey((prev) => prev + 1);
@@ -1692,194 +1746,427 @@ export default function RoomContainer() {
     dispatch(deleteRoom(roomid, token));
   }
 
-  const filteredRooms = rooms.filter((r) =>
-    r.roomNumber.toString().includes(searchRoomNo)
-  );
+  const filteredRooms = rooms.filter((r) => {
+    const searchText = searchRoomNo.toLowerCase().trim();
+    const convertedSearch = convertWordToNumber(searchText);
+    
+    return (
+      r.roomNumber.toString().includes(searchText) ||
+      r.roomNumber.toString().includes(convertedSearch) ||
+      r.type.toLowerCase().includes(searchText)
+    );
+  });
+
+  function openRoomDetails(roomItem) {
+    if (user?.accountType === "Admin") {
+      return; // Admins cannot book rooms
+    }
+    navigate("/dashboard/roombooking", { state: { room: roomItem } });
+  }
+
+  function openGallery(roomItem, startIndex = 0) {
+    const images = getRoomImages(roomItem);
+    if (!images.length) return;
+
+    setGalleryState({
+      open: true,
+      images,
+      index: startIndex,
+      title: `Room ${roomItem.roomNumber}`,
+    });
+  }
+
+  function closeGallery() {
+    setGalleryState({ open: false, images: [], index: 0, title: "" });
+  }
+
+  function showPrevImage() {
+    setGalleryState((prev) => {
+      const nextIndex =
+        prev.index === 0 ? prev.images.length - 1 : prev.index - 1;
+      return { ...prev, index: nextIndex };
+    });
+  }
+
+  function showNextImage() {
+    setGalleryState((prev) => {
+      const nextIndex =
+        prev.index === prev.images.length - 1 ? 0 : prev.index + 1;
+      return { ...prev, index: nextIndex };
+    });
+  }
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center bg-fixed text-white px-4 sm:px-6 lg:px-10 py-10 md:py-16 overflow-x-hidden"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80')",
-      }}
-    >
-      {/* HEADER */}
-      <div className="text-center mb-10 md:mb-16">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-400 tracking-wider">
-          Royal Grand Hotel
-        </h1>
-        <p className="text-gray-300 mt-3 text-sm sm:text-base md:text-lg">
-          Luxury • Comfort • Excellence
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 md:gap-12">
-
-        {/* ROOM LIST */}
-        <div className="xl:col-span-2 space-y-8 md:space-y-10">
-          {filteredRooms.map((r) => (
-            <div
-              key={r._id}
-              className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl md:rounded-3xl overflow-hidden shadow-xl hover:-translate-y-2 transition duration-500"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2">
-
-                {r.image && (
-                  <div className="overflow-hidden">
-                    <img
-                      src={r.image}
-                      alt="room"
-                      className="w-full h-48 sm:h-56 md:h-64 object-cover group-hover:scale-110 transition duration-700"
-                    />
-                  </div>
-                )}
-
-                <div className="p-5 md:p-8 flex flex-col justify-center space-y-3 md:space-y-4">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-yellow-400">
-                    Room {r.roomNumber}
-                  </h2>
-
-                  <p className="text-gray-300 text-sm sm:text-base md:text-lg">
-                    {r.type} • Capacity {r.capacity}
-                  </p>
-
-                  <p className="text-lg sm:text-xl md:text-2xl text-green-400 font-semibold">
-                    ₹{r.pricePerNight} / night
-                  </p>
-
-                  <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
-                      r.isAvailable
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-red-500/20 text-red-400"
-                    }`}
-                  >
-                    {r.isAvailable ? "Available" : "Booked"}
-                  </span>
-
-                  {/* When a regular user clicks a room card, go to booking page */}
-                  <div className="pt-3">
-                    <button
-                      onClick={() => {
-                        if (user?.accountType === "Admin") {
-                          editHandler(r);
-                        } else {
-                          navigate("/dashboard/roombooking", { state: { room: r } });
-                        }
-                      }}
-                      className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:opacity-90 transition text-sm"
-                    >
-                      {user?.accountType === "Admin" ? "Edit" : "Book Room"}
-                    </button>
-                  </div>
-
-                  {user?.accountType === "Admin" && (
-                    <div className="flex flex-col sm:flex-row gap-3 pt-3">
-                      <button
-                        onClick={() => editHandler(r)}
-                        className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition text-sm"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => deleteHandler(r._id)}
-                        className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+    <div className="min-h-screen bg-gray-50 text-gray-900 px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <div className="w-full">
+        <div className="mb-3 text-sm text-gray-500">
+          Dashboard &gt; Rooms &gt; Accommodation
         </div>
 
-        {/* ADMIN FORM */}
-        {user?.accountType === "Admin" && (
-          <div className="bg-white/10 backdrop-blur-xl border border-yellow-500/30 p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-xl xl:sticky xl:top-10">
-            <h2 className="text-xl md:text-3xl font-semibold mb-6 md:mb-8 text-yellow-400 text-center">
-              {editRoom ? "Edit Luxury Room" : "Create Luxury Room"}
-            </h2>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-gray-200 pb-3 mb-5">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Available Rooms ({filteredRooms.length})
+          </h1>
+        </div>
 
-            <form onSubmit={submitHandler} className="space-y-4 md:space-y-6">
-              <input
-                name="roomNumber"
-                placeholder="Room Number"
-                value={formdata.roomNumber}
-                onChange={changeHandler}
-                className="w-full bg-white/10 border border-white/20 px-4 py-2 md:py-3 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition text-sm md:text-base"
-                required
-              />
+        <div className="mb-5">
+          <input
+            type="text"
+            placeholder="Search by room number (e.g., '3' or 'three') or type..."
+            value={searchRoomNo}
+            onChange={(e) => setSearchRoomNo(e.target.value)}
+            className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-green-500 text-sm"
+          />
+        </div>
 
-              <input
-                name="type"
-                placeholder="Room Type"
-                value={formdata.type}
-                onChange={changeHandler}
-                className="w-full bg-white/10 border border-white/20 px-4 py-2 md:py-3 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition text-sm md:text-base"
-                required
-              />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+          <div className="space-y-5">
+            {filteredRooms.map((r) => {
+              const roomImages = getRoomImages(r);
+              const mainImage =
+                roomImages[0] ||
+                "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80";
+              
+              // Calculate varied discount based on room characteristics
+              const roomNum = Number(r.roomNumber || 1);
+              const roomPrice = Number(r.pricePerNight || 0);
+              const capacity = Number(r.capacity || 2);
+              
+              // Discount varies by room features (12-35%)
+              let discountPct;
+              if (roomPrice > 3000) {
+                discountPct = 25 + (roomNum % 5) * 2; // 25-33% for luxury rooms
+              } else if (roomPrice > 1500) {
+                discountPct = 18 + (roomNum % 6) * 2; // 18-28% for premium rooms
+              } else {
+                discountPct = 12 + (roomNum % 5) * 2; // 12-20% for standard rooms
+              }
+              
+              const originalPrice = Math.round(roomPrice / (1 - discountPct / 100));
+              const rating = getRoomRating(r.roomNumber);
+              const reviewCount = 350 + Number(r.roomNumber || 0) * 15;
 
-              <input
-                type="number"
-                name="capacity"
-                placeholder="Capacity"
-                value={formdata.capacity}
-                onChange={changeHandler}
-                className="w-full bg-white/10 border border-white/20 px-4 py-2 md:py-3 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition text-sm md:text-base"
-                required
-              />
+              return (
+                <article
+                  key={r._id}
+                  className="bg-white border border-gray-300 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-[420px_1fr] gap-0">
+                    {/* Room Image Section */}
+                    <div className="relative bg-gray-100 h-64 md:h-auto">
+                      <button
+                        type="button"
+                        onClick={() => openGallery(r, 0)}
+                        className="w-full h-full text-left"
+                      >
+                        <img
+                          src={mainImage}
+                          alt={`Room ${r.roomNumber}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
 
-              <input
-                type="number"
-                name="pricePerNight"
-                placeholder="Price Per Night"
-                value={formdata.pricePerNight}
-                onChange={changeHandler}
-                className="w-full bg-white/10 border border-white/20 px-4 py-2 md:py-3 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition text-sm md:text-base"
-                required
-              />
+                      {roomImages.length > 1 && (
+                        <div className="absolute bottom-3 left-3 right-3 flex gap-1.5 overflow-hidden">
+                          {roomImages.slice(0, 4).map((img, index) => (
+                            <button
+                              key={`${r._id}-thumb-${index}`}
+                              type="button"
+                              onClick={() => openGallery(r, index)}
+                            >
+                              <img
+                                src={img}
+                                alt={`Room ${r.roomNumber} ${index + 1}`}
+                                className="w-12 h-9 object-cover rounded border border-white/80"
+                              />
+                            </button>
+                          ))}
+                          {roomImages.length > 4 && (
+                            <span className="inline-flex items-center justify-center min-w-12 h-9 px-2 rounded bg-black/60 text-white text-xs font-semibold">
+                              +{roomImages.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-              <label className="flex items-center gap-2 text-gray-300 text-sm">
-                <input
-                  type="checkbox"
-                  name="isAvailable"
-                  checked={formdata.isAvailable}
-                  onChange={changeHandler}
-                />
-                Available
-              </label>
+                      {user?.accountType !== "Admin" && (
+                        <div className="absolute top-3 left-3 bg-white/95 px-2 py-1 rounded text-xs font-medium text-gray-700">
+                          Company-Serviced
+                        </div>
+                      )}
+                    </div>
 
-              <Upload
-                key={resetKey}
-                label="Room Image"
-                onChange={(file) =>
-                  setFormdata((prev) => ({
-                    ...prev,
-                    image: file,
-                  }))
-                }
-              />
+                    {/* Room Details */}
+                    <div className="p-4 flex flex-col justify-between">
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 leading-snug">
+                          Room {r.roomNumber} - {r.type} Suite
+                        </h2>
+                        
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          Prime Location • {r.capacity} Guests • <span className="text-red-600">● 0.3 km</span>
+                        </p>
 
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 py-3 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:scale-105 transition duration-300 text-sm md:text-base"
-              >
-                {editRoom ? "Update Room" : "Create Room"}
-              </button>
-            </form>
+                        {/* Rating */}
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="inline-flex items-center gap-1 bg-green-600 text-white text-xs font-semibold px-2 py-0.5 rounded">
+                            {rating} ★
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            ({reviewCount} Ratings) • Very Good
+                          </span>
+                        </div>
+
+                        {/* Amenities */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-gray-700">
+                          <span className="flex items-center gap-1.5">
+                            📶 Free Wifi
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            🔌 Power backup
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            💳 Card payment
+                          </span>
+                          <span className="text-gray-500">+ 11 more</span>
+                        </div>
+
+                        {user?.accountType !== "Admin" && (
+                          <div className="mt-2">
+                            <span className="inline-block bg-amber-50 border border-amber-200 text-amber-800 px-2 py-0.5 rounded text-xs font-semibold">
+                              🏆 WIZARD MEMBER
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Price & Actions */}
+                      <div className="flex items-end justify-between mt-4 pt-3 border-t border-gray-200">
+                        <div>
+                          <div className="flex flex-wrap items-baseline gap-2">
+                            <span className="text-3xl font-bold text-gray-900">
+                              ${formatCurrency(r.pricePerNight)}
+                            </span>
+                            <span className="text-lg font-medium text-gray-400 line-through">
+                              ${formatCurrency(originalPrice)}
+                            </span>
+                            <span className="text-lg font-semibold text-orange-600">
+                              {discountPct}% off
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            + ${Math.round(Number(r.pricePerNight) * 0.13)} taxes & fees · per room per night
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          {user?.accountType === "Admin" ? (
+                            <>
+                              <button
+                                onClick={() => editHandler(r)}
+                                className="px-4 py-2 rounded-md border border-blue-600 text-blue-700 text-sm font-semibold hover:bg-blue-50 transition"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => deleteHandler(r._id)}
+                                className="px-4 py-2 rounded-md border border-red-600 text-red-700 text-sm font-semibold hover:bg-red-50 transition"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => openRoomDetails(r)}
+                                className="px-4 py-2 rounded-md border border-gray-400 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50 transition"
+                              >
+                                View Details
+                              </button>
+                              <button
+                                onClick={() => openRoomDetails(r)}
+                                disabled={!r.isAvailable}
+                                className="px-5 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {r.isAvailable ? "Book Now" : "Unavailable"}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+
+            {!filteredRooms.length && (
+              <div className="bg-white border border-gray-300 rounded-lg p-8 text-center text-gray-500">
+                No rooms found matching your search.
+              </div>
+            )}
           </div>
-        )}
+
+          {user?.accountType === "Admin" && (
+            <aside 
+              className="bg-white border border-gray-300 p-5 rounded-lg shadow-sm lg:sticky lg:top-6 h-fit"
+            >
+              <h2 className="text-xl font-bold mb-4 text-gray-900">
+                {editRoom ? "Edit Room" : "Add New Room"}
+              </h2>
+
+              <form onSubmit={submitHandler} className="space-y-3">
+                <input
+                  name="roomNumber"
+                  placeholder="Room Number"
+                  value={formdata.roomNumber}
+                  onChange={changeHandler}
+                  className="w-full bg-white border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-sm"
+                  required
+                />
+
+                <input
+                  name="type"
+                  placeholder="Room Type (e.g., Deluxe, Suite)"
+                  value={formdata.type}
+                  onChange={changeHandler}
+                  className="w-full bg-white border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-sm"
+                  required
+                />
+
+                <input
+                  type="number"
+                  name="capacity"
+                  placeholder="Guest Capacity"
+                  value={formdata.capacity}
+                  onChange={changeHandler}
+                  className="w-full bg-white border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-sm"
+                  required
+                />
+
+                <input
+                  type="number"
+                  name="pricePerNight"
+                  placeholder="Price Per Night ($)"
+                  value={formdata.pricePerNight}
+                  onChange={changeHandler}
+                  className="w-full bg-white border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-sm"
+                  required
+                />
+
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="isAvailable"
+                    checked={formdata.isAvailable}
+                    onChange={changeHandler}
+                    className="w-4 h-4 text-green-600 rounded"
+                  />
+                  Available for Booking
+                </label>
+
+                <Upload
+                  key={resetKey}
+                  label="Room Images"
+                  multiple={true}
+                  onChange={(files) =>
+                    setFormdata((prev) => ({
+                      ...prev,
+                      images: files,
+                    }))
+                  }
+                />
+
+                <button
+                  type="submit"
+                  className="w-full bg-green-600 text-white py-2.5 rounded-md font-semibold hover:bg-green-700 transition text-sm"
+                >
+                  {editRoom ? "Update Room" : "Create Room"}
+                </button>
+              </form>
+            </aside>
+          )}
+        </div>
       </div>
 
-      {showBookingModal && selectedRoom && (
-        <RoomBooking
-          room={selectedRoom}
-          onClose={() => setShowBookingModal(false)}
-        />
+      {galleryState.open && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6"
+        >
+          <div className="relative bg-white rounded-2xl w-full max-w-6xl p-4 md:p-6 shadow-2xl border border-white/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+                {galleryState.title} Gallery
+              </h3>
+              <button
+                type="button"
+                onClick={closeGallery}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="relative">
+              <img
+                key={galleryState.index}
+                src={galleryState.images[galleryState.index]}
+                alt={`Room image ${galleryState.index + 1}`}
+                className="w-full h-[50vh] md:h-[62vh] object-cover rounded-xl"
+              />
+
+              <span className="absolute top-3 right-3 bg-black/60 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                {galleryState.index + 1} / {galleryState.images.length}
+              </span>
+
+              {galleryState.images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPrevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 w-11 h-11 rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-105 transition"
+                    aria-label="Previous image"
+                  >
+                    <FaChevronLeft className="text-gray-800 text-sm" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 w-11 h-11 rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-105 transition"
+                    aria-label="Next image"
+                  >
+                    <FaChevronRight className="text-gray-800 text-sm" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {galleryState.images.length > 1 && (
+              <div className="mt-4 grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-2">
+                {galleryState.images.map((img, index) => (
+                  <button
+                    key={`${img}-${index}`}
+                    type="button"
+                    onClick={() =>
+                      setGalleryState((prev) => ({ ...prev, index }))
+                    }
+                    className={`rounded-lg overflow-hidden border-2 transition-all ${
+                      galleryState.index === index
+                        ? "border-green-600 ring-2 ring-green-200"
+                        : "border-transparent hover:border-gray-300"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`thumb-${index + 1}`}
+                      className="w-full h-12 md:h-14 object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

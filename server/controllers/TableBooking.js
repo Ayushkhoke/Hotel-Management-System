@@ -215,12 +215,15 @@ const Table = require("../model/Table");
 
 exports.bookTable = async (req, res) => {
   try {
-    console.log("Table booking API hit");
+    console.log("==== TABLE BOOKING REQUEST ====");
+    console.log("Body:", req.body);
+    console.log("User:", req.user?.id);
 
     const { table_id, date, timeSlot, guests } = req.body;
 
     // 🔍 Basic Validation
     if (!table_id || !date || !timeSlot || !guests) {
+      console.log("Validation failed - missing fields:", { table_id, date, timeSlot, guests });
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -230,22 +233,36 @@ exports.bookTable = async (req, res) => {
     // 🔍 Convert date properly (VERY IMPORTANT FIX)
     const selectedDate = new Date(date);
     selectedDate.setHours(0, 0, 0, 0);
+    console.log("Selected date:", selectedDate);
 
     // 🔍 Check table exists
     const table = await Table.findById(table_id);
 
     if (!table) {
+      console.log("Table not found:", table_id);
       return res.status(404).json({
         success: false,
         message: "Table not found",
       });
     }
 
+    console.log("Table found:", { id: table._id, number: table.tableNumber, price: table.price, capacity: table.capacity });
+
     // 🔍 Capacity validation
     if (Number(guests) > table.capacity) {
+      console.log("Capacity exceeded:", { guests, capacity: table.capacity });
       return res.status(400).json({
         success: false,
         message: `Maximum capacity is ${table.capacity}`,
+      });
+    }
+
+    // 🔍 Check if table has price
+    if (!table.price || table.price <= 0) {
+      console.log("Table has no price:", { price: table.price });
+      return res.status(400).json({
+        success: false,
+        message: "Table price not set. Please contact admin.",
       });
     }
 
@@ -258,6 +275,7 @@ exports.bookTable = async (req, res) => {
     });
 
     if (alreadyBooked) {
+      console.log("Table already booked:", alreadyBooked);
       return res.status(400).json({
         success: false,
         message: "Table already booked for this slot",
@@ -266,6 +284,7 @@ exports.bookTable = async (req, res) => {
 
     // 🔍 Calculate total amount
     const totalAmount = Number(table.price) * Number(guests);
+    console.log("Total amount calculated:", { price: table.price, guests, totalAmount });
 
     // 🔍 Create booking
     const booking = await TableBooking.create({
@@ -278,7 +297,7 @@ exports.bookTable = async (req, res) => {
       status: "pending",
     });
 
-    console.log("Booking created:", booking);
+    console.log("Booking created:", booking._id);
 
     // 🔍 Populate table details
     const populatedBooking = await TableBooking.findById(booking._id)

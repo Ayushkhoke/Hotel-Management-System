@@ -26,7 +26,10 @@ export function createMenu(data, token) {
 
       toast.success("Menu created successfully");
 
-      return res.data.menu; // ✅ correct
+      // Refresh menu list to show the new item
+      dispatch(getAllMenus(token));
+
+      return res.data.menu;
 
     } catch (err) {
       console.error("CREATE MENU ERROR:", err);
@@ -34,7 +37,7 @@ export function createMenu(data, token) {
       return null;
     }
      finally {
-      dispatch(setLoading(false)); // ✅ ALWAYS runs
+      dispatch(setLoading(false));
     }
   };
 }
@@ -98,4 +101,29 @@ export function deleteMenu(menuId, token) {
       );
     }
   };
+}
+
+// GET AVAILABLE MENUS ONLY
+export async function getAvailableMenus(token) {
+  try {
+    console.log("Getting available menus, token:", token ? "exists" : "missing");
+    const res = await apiConnector(
+      "GET",
+      menu.GET_AVAILABLE_MENU_API,
+      null,
+      { Authorization: `Bearer ${token}` }
+    );
+
+    console.log("Menu API response:", res?.data);
+
+    if (!res?.data?.success) {
+      throw new Error(res?.data?.message || "Failed to fetch menu");
+    }
+
+    return res.data.menus || [];
+  } catch (error) {
+    console.error("GET AVAILABLE MENU ERROR:", error);
+    // Don't show toast for AI receptionist calls - just log
+    return [];
+  }
 }

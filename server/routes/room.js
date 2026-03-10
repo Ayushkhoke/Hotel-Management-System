@@ -5,7 +5,8 @@ const {
   // addRoom,
   updateRoom,
   deleteRoom,
-  getRooms
+  getRooms,
+  getAvailableRooms
 } = require("../controllers/Room");
 const { createReview, deleteReview } = require("../controllers/Review");
 const { auth, isAdmin } = require("../middlewares/auth");
@@ -15,7 +16,7 @@ router.post(
   "/createroom",
   auth,
   isAdmin,
-  upload.single("image"), // 🔥 MUST BE HERE
+  upload.array("images", 10),
   createRoom
 );
 // router.post("/addroom", auth, isAdmin, addRoom);
@@ -23,12 +24,13 @@ router.put(
   "/updateroom",
   auth,
   isAdmin,
-  upload.single("image"), // 🔥 REQUIRED
+  upload.array("images", 10),
   updateRoom
 );
 
 router.delete("/deleteroom", auth, isAdmin, deleteRoom);
 router.get("/getRooms", auth, getRooms);
+router.get("/getAvailableRooms", auth, getAvailableRooms);
 
 //review
 router.post("/create", auth, createReview);

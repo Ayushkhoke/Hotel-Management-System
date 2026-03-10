@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { bookRoom, getMyBookings,deleteBooking } = require("../controllers/Booking");
 
-const { createMenu, getMenus, deleteMenu } = require("../controllers/menu");
+const { createMenu, getMenus, getAvailableMenus, deleteMenu } = require("../controllers/menu");
 const { auth, isAdmin } = require("../middlewares/auth");
 const{upload}=require("../middlewares/upload")
 const {
@@ -19,6 +19,7 @@ router.post("/createmenu", auth, isAdmin,
   upload.single("image"),
    createMenu);
 router.get("/getmenus", auth,getMenus);
+router.get("/getavailablemenus", auth, getAvailableMenus);
 router.delete("/deletemenu", auth, isAdmin, deleteMenu);
 
 

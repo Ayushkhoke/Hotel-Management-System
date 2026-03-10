@@ -162,6 +162,34 @@ export function logoutUser(navigate){
   }
 }
 
+export function googleAuthUser(idToken, navigate) {
+  return async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+      const res = await apiConnector("POST", auth.GOOGLE_AUTH_API, { idToken });
+
+      if (!res?.data?.success) {
+        throw new Error(res?.data?.message || "Google authentication failed");
+      }
+
+      const token = res.data.token;
+      const user = res.data.user;
+
+      dispatch(setToken(token));
+      dispatch(setUser(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      toast.success("Logged in with Google successfully!");
+      navigate("/dashboard/my-profile");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message || "Google login failed");
+    }
+
+    dispatch(setLoading(false));
+  };
+}
+
 // export function changePassword(data, token) {
 //   return async (dispatch) => {
 //     dispatch(setLoading(true));
@@ -228,5 +256,42 @@ export function changePassword(data, token) {
     }
 
     dispatch(setLoading(false));
+  };
+}
+
+export function updateProfile(formData, token) {
+  return async (dispatch) => {
+    dispatch(setLoading(true));
+
+    try {
+      const response = await apiConnector(
+        "PUT",
+        auth.UPDATE_PROFILE_API,
+        formData,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      // Update user in Redux store and localStorage
+      const updatedUser = response.data.user;
+      dispatch(setUser(updatedUser));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      toast.success("Profile updated successfully!");
+      return updatedUser;
+
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update profile"
+      );
+      return null;
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 }

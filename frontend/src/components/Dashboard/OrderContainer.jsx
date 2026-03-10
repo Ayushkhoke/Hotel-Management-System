@@ -52,7 +52,7 @@
 //         <p className="text-gray-600 mt-2">{menuItem.description}</p>
 
 //         <p className="text-xl font-semibold mt-3 text-green-600">
-//           ₹{menuItem.price}
+//           ${menuItem.price}
 //         </p>
 
 //         <div className="mt-4">
@@ -69,7 +69,7 @@
 //         </div>
 
 //         <p className="mt-3 font-semibold">
-//           Total: ₹{menuItem.price * quantity}
+//           Total: ${menuItem.price * quantity}
 //         </p>
 
 //         <button
@@ -179,7 +179,7 @@
 //   return (
 //     <div>
 //       <h2>{menuItem.name}</h2>
-//       <p>₹{menuItem.price}</p>
+//       <p>${menuItem.price}</p>
 
 //       <input
 //         type="number"
@@ -282,7 +282,7 @@
 //         <p className="text-gray-600 mt-2">{menuItem.description}</p>
 
 //         <p className="text-xl font-semibold mt-3 text-green-600">
-//           ₹{menuItem.price}
+//           ${menuItem.price}
 //         </p>
 
 //         <div className="mt-4">
@@ -299,7 +299,7 @@
 //         </div>
 
 //         <p className="mt-3 font-semibold">
-//           Total: ₹{menuItem.price * quantity}
+//           Total: ${menuItem.price * quantity}
 //         </p>
 
 //         <button
@@ -374,11 +374,13 @@ export default function OrderContainer() {
       <div className="bg-white shadow-xl rounded-2xl p-5 sm:p-6 w-full max-w-md">
 
         {/* Image */}
-        <img
-          src={menuItem.image}
-          alt={menuItem.name}
-          className="w-full h-40 sm:h-48 object-cover rounded-xl"
-        />
+        <div className="relative w-full h-40 sm:h-48 overflow-hidden rounded-xl bg-gray-100">
+          <img
+            src={menuItem.image}
+            alt={menuItem.name}
+            className="absolute inset-0 block w-full h-full object-cover object-center"
+          />
+        </div>
 
         {/* Name */}
         <h2 className="text-xl sm:text-2xl font-bold mt-4">
@@ -392,7 +394,7 @@ export default function OrderContainer() {
 
         {/* Price */}
         <p className="text-lg sm:text-xl font-semibold mt-3 text-green-600">
-          ₹{menuItem.price}
+          ${menuItem.price}
         </p>
 
         {/* Quantity */}
@@ -411,7 +413,7 @@ export default function OrderContainer() {
 
         {/* Total */}
         <p className="mt-3 font-semibold text-base sm:text-lg">
-          Total: ₹{menuItem.price * quantity}
+          Total: ${menuItem.price * quantity}
         </p>
 
         {/* Button */}

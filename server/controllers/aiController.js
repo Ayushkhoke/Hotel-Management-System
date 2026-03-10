@@ -1,63 +1,45 @@
-// const { askGemini } = require("../services/aiService");
+const { askGemini } = require("../services/aiService");
 
-// exports.handleAI = async (req, res) => {
-//   try {
-//     const { message } = req.body;
+exports.handleAI = async (req, res) => {
+	try {
+		const { chat, question } = req.body || {};
 
-//     if (!message) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Message is required"
-//       });
-//     }
+		let normalizedChat = [];
 
-//     const reply = await askGemini(message);
+		if (Array.isArray(chat) && chat.length > 0) {
+			normalizedChat = chat
+				.filter((msg) => msg && typeof msg.text === "string" && msg.text.trim())
+				.map((msg) => ({
+					role: msg.role === "ai" ? "ai" : "user",
+					text: msg.text.trim(),
+				}));
+		} else if (typeof question === "string" && question.trim()) {
+			normalizedChat = [{ role: "user", text: question.trim() }];
+		}
 
-//     res.status(200).json({
-//       success: true,
-//       reply
-//     });
+		if (!normalizedChat.length) {
+			return res.status(400).json({
+				success: false,
+				message: "Please provide a question or chat history.",
+			});
+		}
 
-//   } catch (error) {
-//     console.error("AI Error:", error.message);
+		const reply = await askGemini(normalizedChat);
 
-//     res.status(500).json({
-//       success: false,
-//       message: "AI service failed"
-//     });
-//   }
-// };
+		return res.status(200).json({
+			success: true,
+			reply,
+		});
+	} catch (error) {
+		console.error("AI Controller Error:", error.message);
 
-
-// const { askGemini } = require("../services/aiService");
-
-// exports.handleAI = async (req, res) => {
-//   try {
-//     const { chat } = req.body;
-
-//     if (!chat || !Array.isArray(chat)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Chat history is required"
-//       });
-//     }
-
-//     const reply = await askGemini(chat);
-
-//     res.status(200).json({
-//       success: true,
-//       reply
-//     });
-
-//   } catch (error) {
-//     console.error("AI Error:", error.message);
-
-//     res.status(500).json({
-//       success: false,
-//       message: "AI service failed"
-//     });
-//   }
-// };
+		// Send user-friendly error message
+		return res.status(500).json({
+			success: false,
+			message: error.message || "AI service is temporarily unavailable. Please try again later.",
+		});
+	}
+};
 
 
 

@@ -63,10 +63,6 @@ const User = require("../model/User");
 
 exports.createRoom = async (req, res) => {
   try {
-    // ❌ REMOVE THIS (WRONG)
-    // console.log("token", req.body.token);
-    console.log("create room hit");
-
     const {
       roomNumber,
       type,
@@ -76,12 +72,14 @@ exports.createRoom = async (req, res) => {
     } = req.body;
 
     const adminId = req.user.id;
+    const uploadedImages = Array.isArray(req.files)
+      ? req.files.map((file) => file.path)
+      : [];
 
-    // ✅ VALIDATION (image from req.file)
-    if (!roomNumber || !type || !capacity || !pricePerNight || !req.file) {
+    if (!roomNumber || !type || !capacity || !pricePerNight || !uploadedImages.length) {
       return res.status(400).json({
         success: false,
-        message: "All fields including image are required",
+        message: "All fields including room images are required",
       });
     }
 
@@ -94,15 +92,13 @@ exports.createRoom = async (req, res) => {
       });
     }
 
-    // ✅ IMAGE URL FROM CLOUDINARY
-    const imageUrl = req.file.path;
-
     const room = await Room.create({
       roomNumber,
       type,
       capacity,
       pricePerNight,
-      image: imageUrl,
+      image: uploadedImages[0],
+      images: uploadedImages,
       isAvailable,
       admin: adminId,
     });
@@ -167,9 +163,13 @@ if (existingRoom) {
     if (req.body.isAvailable !== undefined)
       updateData.isAvailable = req.body.isAvailable;
 
-    // ✅ image from multer
-    if (req.file) {
-      updateData.image = req.file.path; // Cloudinary URL
+    const uploadedImages = Array.isArray(req.files)
+      ? req.files.map((file) => file.path)
+      : [];
+
+    if (uploadedImages.length) {
+      updateData.image = uploadedImages[0];
+      updateData.images = uploadedImages;
     }
 
     const updatedRoom = await Room.findByIdAndUpdate(
@@ -235,6 +235,58 @@ exports.getRooms = async (req, res) => {
     res.status(200).json({
       success: true,
       rooms,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Get available rooms for specific date range
+exports.getAvailableRooms = async (req, res) => {
+  try {
+    const { checkIn, checkOut } = req.query;
+
+    if (!checkIn || !checkOut) {
+      return res.status(400).json({
+        success: false,
+        message: "Check-in and check-out dates are required",
+      });
+    }
+
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+
+    if (checkOutDate <= checkInDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Check-out must be after check-in",
+      });
+    }
+
+    // Get all rooms
+    const allRooms = await Room.find();
+
+    // Find rooms with overlapping bookings
+    const Booking = require("../model/Booking");
+    const overlappingBookings = await Booking.find({
+      checkIn: { $lt: checkOutDate },
+      checkOut: { $gt: checkInDate },
+      status: "booked",
+    }).select("room");
+
+    const bookedRoomIds = overlappingBookings.map((booking) => booking.room.toString());
+
+    // Filter out booked rooms
+    const availableRooms = allRooms.filter(
+      (room) => room.isAvailable && !bookedRoomIds.includes(room._id.toString())
+    );
+
+    res.status(200).json({
+      success: true,
+      rooms: availableRooms,
     });
   } catch (error) {
     res.status(500).json({

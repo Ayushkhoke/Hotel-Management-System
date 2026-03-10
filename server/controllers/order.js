@@ -32,7 +32,9 @@ exports.placeOrder = async (req, res) => {
     const order = await Order.create({
       user: req.user.id,
       items,
-      totalAmount
+      totalAmount,
+      paymentStatus: "pending",
+      orderStatus: "placed"
     });
    console.log("order data ",order);
     res.status(200).json({

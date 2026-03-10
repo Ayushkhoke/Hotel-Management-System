@@ -5,7 +5,9 @@ import {
   LogOut,
   BedDouble,
   MenuSquare,
-  Utensils
+  Utensils,
+  ClipboardList,
+  BookOpen
 
 } from "lucide-react";
 
@@ -35,6 +37,20 @@ export const SIDEBAR_LINKS = [
     icon: BedDouble,
     path: "/dashboard/room",
     // type: ACCOUNT_TYPES.ADMIN,
+  },
+  {
+    id: 3.25,
+    name: "My Room Bookings",
+    icon: BookOpen,
+    path: "/dashboard/my-room-bookings",
+    type: ACCOUNT_TYPES.USER,
+  },
+  {
+    id: 3.5,
+    name: "My Table Bookings",
+    icon: ClipboardList,
+    path: "/dashboard/my-table-bookings",
+    type: ACCOUNT_TYPES.USER,
   },
   {
     id: 4,

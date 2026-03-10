@@ -1,4 +1,4 @@
-const {instance}=require("../config/razorpay");
+﻿const {instance}=require("../config/razorpay");
 const Payment = require("../model/Payment");
 const User=require('../model/User')
 const mongoose = require("mongoose");
@@ -16,7 +16,7 @@ const crypto = require("crypto");
 
 //     const options = {
 //       amount: amount * 100, // Razorpay uses paise
-//       currency: "INR",
+//       currency: "USD",
 //       receipt: `receipt_${Date.now()}`,
 //     };
 
@@ -58,7 +58,7 @@ const crypto = require("crypto");
 //       paymentId
 //     } = req.body;
 
-//     // 🔍 Find payment record
+//     // ðŸ” Find payment record
 //     const payment = await Payment.findById(paymentId);
 
 //     if (!payment) {
@@ -82,7 +82,7 @@ const crypto = require("crypto");
 //       });
 //     }
 
-//     // ✅ Update payment status
+//     // âœ… Update payment status
 //     payment.status = "paid";
 //     await payment.save();
 
@@ -192,11 +192,11 @@ const crypto = require("crypto");
 //       });
 //     }
 
-//     // ✅ Update payment status
+//     // âœ… Update payment status
 //     payment.status = "paid";
 //     await payment.save();
 
-//     // 🔥 If payment was for ROOM
+//     // ðŸ”¥ If payment was for ROOM
 //     if (payment.paymentFor === "room") {
 //       await Booking.findByIdAndUpdate(payment.booking, {
 //         paymentStatus: "paid",
@@ -204,7 +204,7 @@ const crypto = require("crypto");
 //       });
 //     }
 
-//     // 🔥 If payment was for ORDER
+//     // ðŸ”¥ If payment was for ORDER
 //     if (payment.paymentFor === "order") {
 //       await Order.findByIdAndUpdate(payment.order, {
 //         paymentStatus: "paid",
@@ -231,7 +231,7 @@ const crypto = require("crypto");
 //     const { amount, bookingId, tableBookingId, orderId, paymentFor } = req.body;
 
 //     console.log(amount);
-//     // 🔴 VALIDATION
+//     // ðŸ”´ VALIDATION
 //     if (!amount) {
 //       return res.status(400).json({
 //         success: false,
@@ -248,13 +248,13 @@ const crypto = require("crypto");
 
 //     const options = {
 //       amount: amount * 100, // convert to paise
-//       currency: "INR",
+//       currency: "USD",
 //       receipt: `receipt_${Date.now()}`,
 //     };
 
 //     const razorpayOrder = await instance.orders.create(options);
 
-//     // 💾 Save payment in DB
+//     // ðŸ’¾ Save payment in DB
 //     const payment = await Payment.create({
 //       booking: paymentFor === "room" ? bookingId : null,
 //       tableBooking: paymentFor === "table" ? tableBookingId : null,
@@ -288,9 +288,9 @@ exports.capturePayment = async (req, res) => {
   try {
     const { amount, bookingId, orderId, paymentFor } = req.body;
 
-    console.log("BODY:", req.body); // 👈 ADD THIS FOR DEBUG
+    console.log("BODY:", req.body); // ðŸ‘ˆ ADD THIS FOR DEBUG
 
-    // 🔴 BASIC VALIDATION
+    // ðŸ”´ BASIC VALIDATION
     if (!amount || !paymentFor) {
       return res.status(400).json({
         success: false,
@@ -298,7 +298,7 @@ exports.capturePayment = async (req, res) => {
       });
     }
 
-    // 🔥 ADD THIS PART HERE 👇👇👇
+    // ðŸ”¥ ADD THIS PART HERE ðŸ‘‡ðŸ‘‡ðŸ‘‡
 
     if (paymentFor === "room" && !bookingId) {
       return res.status(400).json({
@@ -321,10 +321,11 @@ exports.capturePayment = async (req, res) => {
       });
     }
 
-    // 🔥 Razorpay Order Options
+    // Use INR so Razorpay can show India payment methods like UPI/Netbanking.
+    const normalizedAmount = Math.round(Number(amount) * 100);
     const options = {
-      amount: amount * 100,
-      currency: "INR",
+      amount: normalizedAmount,
+      currency: process.env.RAZORPAY_CURRENCY || "INR",
       receipt: `receipt_${Date.now()}`,
     };
 
@@ -390,11 +391,11 @@ exports.capturePayment = async (req, res) => {
 //       });
 //     }
 
-//     // ✅ Update payment
+//     // âœ… Update payment
 //     payment.status = "paid";
 //     await payment.save();
 
-//     // 🔥 Dynamic update based on payment type
+//     // ðŸ”¥ Dynamic update based on payment type
 //     if (payment.paymentFor === "room" && payment.booking) {
 //       await Booking.findByIdAndUpdate(payment.booking, {
 //         paymentStatus: "paid",
@@ -524,7 +525,7 @@ exports.verifyPayment = async (req, res) => {
       });
     }
 
-    // 🔐 Verify Signature
+    // ðŸ” Verify Signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSignature = crypto
@@ -539,11 +540,11 @@ exports.verifyPayment = async (req, res) => {
       });
     }
 
-    // ✅ Update Payment Status
+    // âœ… Update Payment Status
     payment.status = "paid";
     await payment.save();
 
-    // 🔥 Dynamic Update Based on Payment Type
+    // ðŸ”¥ Dynamic Update Based on Payment Type
 
     if (payment.paymentFor === "room" && payment.booking) {
       await Booking.findByIdAndUpdate(payment.booking, {
@@ -560,8 +561,7 @@ exports.verifyPayment = async (req, res) => {
 
     if (payment.paymentFor === "table" && payment.tableBooking) {
       await TableBooking.findByIdAndUpdate(payment.tableBooking, {
-        paymentStatus: "paid",
-        status: "confirmed",
+        status: "paid",
       });
     }
 
@@ -579,3 +579,4 @@ exports.verifyPayment = async (req, res) => {
     });
   }
 };
+

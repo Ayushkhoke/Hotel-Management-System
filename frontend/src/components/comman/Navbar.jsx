@@ -47,21 +47,33 @@
 // }
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Menu, X } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 
 export default function Navbar() {
   const { token } = useSelector((state) => state.auth);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   const navStyle =
     "relative text-sm font-medium tracking-wide hover:text-yellow-400 transition duration-300 after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-yellow-400 after:transition-all after:duration-300 hover:after:w-full";
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
+    <header className="fixed top-0 w-full z-[90] bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         {/* LOGO */}
@@ -96,34 +108,38 @@ export default function Navbar() {
               </NavLink>
 
               {/* Profile Dropdown */}
-              <div className="relative">
-                <ProfileDropdown />
-              </div>
+              <ProfileDropdown />
             </>
           )}
         </nav>
 
         {/* MOBILE MENU BUTTON / PROFILE */}
-        <div className="md:hidden">
-          {token ? (
-            <div className="flex items-center">
-              <ProfileDropdown />
-            </div>
-          ) : (
-            <button onClick={() => setMobileOpen(!mobileOpen)}>
-              {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-            </button>
-          )}
+        <div className="md:hidden flex items-center gap-3">
+          {token && <ProfileDropdown />}
         </div>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU OVERLAY */}
       {mobileOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-yellow-500/20 px-6 py-6 space-y-6 text-center">
+        <div 
+          className="fixed inset-0 bg-black/60 z-[80] md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* MOBILE MENU */}
+      <div className={`
+        fixed top-[73px] right-0 bottom-0 w-[75vw] max-w-[280px] z-[85]
+        bg-black/95 backdrop-blur-xl
+        transform-gpu will-change-transform transition-transform duration-300 ease-out
+        md:hidden
+        ${mobileOpen ? 'translate-x-0 border-l border-yellow-500/20' : 'translate-x-[110%] border-l-0'}
+      `}>
+        <div className="px-6 py-6 space-y-6 text-left overflow-y-auto h-full">
 
           <NavLink
             to="/"
-            className="block hover:text-yellow-400 transition"
+            className="block py-2 text-base hover:text-yellow-400 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
             Home
@@ -133,7 +149,7 @@ export default function Navbar() {
             <>
               <NavLink
                 to="/login"
-                className="block hover:text-yellow-400 transition"
+                className="block py-2 text-base hover:text-yellow-400 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Login
@@ -141,7 +157,7 @@ export default function Navbar() {
 
               <NavLink
                 to="/signup"
-                className="block hover:text-yellow-400 transition"
+                className="block py-2 text-base hover:text-yellow-400 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Signup
@@ -150,22 +166,16 @@ export default function Navbar() {
           )}
 
           {token && (
-            <>
-              <NavLink
-                to="/dashboard"
-                className="block hover:text-yellow-400 transition"
-                onClick={() => setMobileOpen(false)}
-              >
-                Dashboard
-              </NavLink>
-
-              <div className="flex justify-center mt-4">
-                <ProfileDropdown />
-              </div>
-            </>
+            <NavLink
+              to="/dashboard"
+              className="block py-2 text-base hover:text-yellow-400 transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              Dashboard
+            </NavLink>
           )}
         </div>
-      )}
+      </div>
     </header>
   );
 }

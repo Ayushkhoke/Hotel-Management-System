@@ -28,6 +28,11 @@ const roomSchema = new mongoose.Schema({
     required: true
   },
 
+  images: {
+    type: [String],
+    default: []
+  },
+
   isAvailable: {
     type: Boolean,
     default: true

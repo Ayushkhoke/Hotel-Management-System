@@ -65,6 +65,33 @@ exports.getMenus = async (req, res) => {
   }
 };
 
+// GET AVAILABLE MENUS ONLY (public)
+exports.getAvailableMenus = async (req, res) => {
+  try {
+    // Find menus where isAvailable is true OR undefined (for backward compatibility)
+    const menus = await Menu.find({ 
+      $or: [
+        { isAvailable: true },
+        { isAvailable: { $exists: false } }
+      ]
+    });
+
+    console.log("Available menus found:", menus.length);
+
+    res.status(200).json({
+      success: true,
+      menus,
+    });
+
+  } catch (error) {
+    console.error("GET AVAILABLE MENUS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 // DELETE MENU (admin)
 exports.deleteMenu = async (req, res) => {

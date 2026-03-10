@@ -26,6 +26,9 @@ setTable(state,action){
     },
     setEditTable(state,action){
         state.edittable=action.payload;
+},
+removeTable(state,action){
+    state.tables = state.tables.filter(table => table._id !== action.payload);
 },  
 setTablebookings(state,action){
     state.tablebookings=action.payload;
@@ -45,6 +48,6 @@ setPaymentLoading(state,action){
 )
 
 
-export const {setTables,setTable,setEditTable,setTablebookings,setTablebooked,setedittablebooking,setPaymentLoading}=tableSlice.actions;
+export const {setTables,setTable,setEditTable,removeTable,setTablebookings,setTablebooked,setedittablebooking,setPaymentLoading}=tableSlice.actions;
 
 export default tableSlice.reducer;

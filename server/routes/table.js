@@ -3,7 +3,9 @@ const router=express.Router()
 const {
   createTable,
   getTables,
-  updateTableStatus
+  getAvailableTables,
+  updateTableStatus,
+  deleteTable
 } = require("../controllers/Table");
 const {
   bookTable,
@@ -31,6 +33,7 @@ router.post("/createTable", auth,isAdmin,
   ])
   ,createTable);
 router.get("/getTables",getTables);
+router.get("/getAvailableTables", getAvailableTables);
 // router.put("/updateTableStatus",auth,isAdmin,updateTableStatus);
 router.put(
   "/updateTableStatus",
@@ -39,6 +42,7 @@ router.put(
   upload.single("image"),
   updateTableStatus
 );
+router.delete("/deleteTable/:id", auth, isAdmin, deleteTable);
 
 
 //table bookings 

@@ -387,10 +387,11 @@
 //   );
 // }
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { signupUser } from "../services/authApi";
+import toast from "react-hot-toast";
+import { googleAuthUser, signupUser } from "../services/authApi";
 
 export default function Signup() {
   const dispatch = useDispatch();
@@ -408,6 +409,53 @@ export default function Signup() {
   });
 
   const [preview, setPreview] = useState(null);
+
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    if (!googleClientId) return;
+
+    const initializeGoogle = () => {
+      if (!window.google?.accounts?.id) return;
+      
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: (response) => {
+          if (response?.credential) {
+            dispatch(googleAuthUser(response.credential, navigate));
+          }
+        },
+      });
+
+      // Render the official Google button
+      const buttonDiv = document.getElementById("google-signup-button");
+      if (buttonDiv) {
+        window.google.accounts.id.renderButton(
+          buttonDiv,
+          {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+            text: "signup_with",
+            shape: "rectangular",
+            logo_alignment: "left"
+          }
+        );
+      }
+    };
+
+    if (window.google?.accounts?.id) {
+      initializeGoogle();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeGoogle;
+    document.body.appendChild(script);
+  }, [dispatch, googleClientId, navigate]);
 
   function changehandler(e) {
     if (e.target.name === "image") {
@@ -570,6 +618,18 @@ export default function Signup() {
             >
               Create Account
             </button>
+
+            <div className="relative py-1">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">or</span>
+              </div>
+            </div>
+
+            {/* Google Sign-Up Button (Rendered by Google) */}
+            <div id="google-signup-button" className="w-full flex justify-center"></div>
 
             <p className="text-sm text-center text-gray-500 mt-4">
               Already have an account?{" "}

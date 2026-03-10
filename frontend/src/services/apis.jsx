@@ -1,18 +1,24 @@
-// const BASE_URL="http://localhost:4000/api/v1"
+// 🔹 Switch BASE_URL based on your environment
+// For LOCAL development: Use localhost
+const BASE_URL="http://localhost:4000/api/v1"
 
+// For PRODUCTION deployment: Use your deployed backend URL
+// const BASE_URL="https://hotel-management-system-1-5e51.onrender.com/api/v1"
 
-const BASE_URL="https://hotel-management-system-1-5e51.onrender.com/api/v1"
 export const auth={
     SIGNUP_API:BASE_URL+"/auth/signup",
     LOGIN_API:BASE_URL+"/auth/login",
+    GOOGLE_AUTH_API:BASE_URL+"/auth/google",
     CHANGE_PASSWORD_API:BASE_URL+"/auth/change-password",
+    UPDATE_PROFILE_API:BASE_URL+"/auth/update-profile",
 }
 
 export const table={
     CREATE_TABLE_API:BASE_URL+"/table/createTable",
     GET_TABLES_API:BASE_URL+"/table/getTables",
+    GET_AVAILABLE_TABLES_API:BASE_URL+"/table/getAvailableTables",
     UPDATE_TABLE_API:BASE_URL+"/table/updateTableStatus",
-    // DELETE_TABLE_API:BASE_URL+"/tables/delete/",
+    DELETE_TABLE_API:BASE_URL+"/table/deleteTable",
 }
 
 
@@ -21,6 +27,7 @@ CREATE_ROOM_API:BASE_URL+"/room/createroom",
     UPDATE_ROOM_API:BASE_URL+"/room/updateroom",
     DELETE_ROOM_API:BASE_URL+"/room/deleteroom",
 GET_ROOM_API:BASE_URL+"/room/getRooms",
+GET_AVAILABLE_ROOMS_API:BASE_URL+"/room/getAvailableRooms",
   BOOK_ROOM_API: "/booking/bookroom",
    GET_ROOMBOOKING_API: "/booking/my-bookings",
     DELETE_ROOMBOOKING_API: "/booking/deletebooking",
@@ -29,6 +36,7 @@ GET_ROOM_API:BASE_URL+"/room/getRooms",
 export const menu={
     CREATE_MENU_API:BASE_URL+"/booking/createmenu",
     GET_MENU_API:BASE_URL+"/booking/getmenus",
+    GET_AVAILABLE_MENU_API:BASE_URL+"/booking/getavailablemenus",
     DELETE_MENU_API:BASE_URL+"/booking/deletemenu"
 }
 
@@ -53,3 +61,11 @@ export const booking={
      ROOM_BOOK_API:BASE_URL +"/booking/bookroom",
      GET_MY_BOOKINGS_API:BASE_URL +"/booking/my-bookings",
 }
+
+export const ai = {
+  ASK_AI_API: BASE_URL + "/aireceptionist/ask-ai",
+};
+
+export const contact = {
+  CREATE_CONTACT_API: BASE_URL + "/contact/create",
+};

@@ -38,7 +38,8 @@ const storage = new CloudinaryStorage({
       folder: "hotel-management/images",
       resource_type: "image",
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
-      transformation: [{ width: 800, height: 600, crop: "limit" }],
+      // Keep source resolution to avoid blurry room/gallery images.
+      // Any display resizing should happen in the frontend UI, not at upload time.
     };
   },
 });
@@ -46,7 +47,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // ✅ 5MB limit
+    fileSize: 10 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {

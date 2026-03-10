@@ -37,11 +37,11 @@
 // }
 
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { LoginUser } from "../services/authApi.jsx";
-import {Link} from 'react-router-dom';
+import toast from "react-hot-toast";
+import { LoginUser, googleAuthUser } from "../services/authApi.jsx";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -53,6 +53,53 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    if (!googleClientId) return;
+
+    const initializeGoogle = () => {
+      if (!window.google?.accounts?.id) return;
+      
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: (response) => {
+          if (response?.credential) {
+            dispatch(googleAuthUser(response.credential, navigate));
+          }
+        },
+      });
+
+      // Render the official Google button
+      const buttonDiv = document.getElementById("google-signin-button");
+      if (buttonDiv) {
+        window.google.accounts.id.renderButton(
+          buttonDiv,
+          {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+            text: "signin_with",
+            shape: "rectangular",
+            logo_alignment: "left"
+          }
+        );
+      }
+    };
+
+    if (window.google?.accounts?.id) {
+      initializeGoogle();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeGoogle;
+    document.body.appendChild(script);
+  }, [dispatch, googleClientId, navigate]);
 
   function changeHandler(e) {
     setFormData((prev) => ({
@@ -90,7 +137,6 @@ backgroundImage:
 
         {/* Form */}
         <form onSubmit={submitHandler} className="mt-8 space-y-5">
-          
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -102,10 +148,8 @@ backgroundImage:
               placeholder="admin@hotel.com"
               value={formData.email}
               onChange={changeHandler}
-
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-                         focus:ring-2 focus:ring-amber-600 focus:outline-none text-black" 
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-600 focus:outline-none text-black"
             />
           </div>
 
@@ -123,15 +167,13 @@ backgroundImage:
                 value={formData.password}
                 onChange={changeHandler}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 
-                           focus:ring-2 focus:ring-amber-600 focus:outline-none text-black"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-600 focus:outline-none text-black"
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 
-                           text-sm font-medium text-amber-600 hover:text-amber-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-amber-600 hover:text-amber-700"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -141,13 +183,22 @@ backgroundImage:
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg bg-amber-600 text-white 
-                       font-semibold text-lg hover:bg-amber-700 
-                       transition shadow-md"
+            className="w-full py-3 rounded-lg bg-amber-600 text-white font-semibold text-lg hover:bg-amber-700 transition shadow-md"
           >
             Sign In
           </button>
-         
+
+          <div className="relative py-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300"></span>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">or</span>
+            </div>
+          </div>
+
+          {/* Google Sign-In Button (Rendered by Google) */}
+          <div id="google-signin-button" className="w-full flex justify-center"></div>
         </form>
 
         {/* Footer */}

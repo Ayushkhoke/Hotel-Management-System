@@ -1,4 +1,5 @@
 const Table = require("../model/Table");
+const TableBooking = require("../model/TableBooking");
 
 
 
@@ -170,6 +171,71 @@ exports.getTables = async (req, res) => {
   }
 };
 
+// GET AVAILABLE TABLES FOR SPECIFIC DATE AND TIME SLOT
+exports.getAvailableTables = async (req, res) => {
+  try {
+    const { date, timeSlot } = req.query;
+
+    console.log("getAvailableTables called with:", { date, timeSlot });
+
+    if (!date || !timeSlot) {
+      return res.status(400).json({
+        success: false,
+        message: "Date and time slot are required",
+      });
+    }
+
+    // Validate timeSlot
+    const validSlots = ["morning", "afternoon", "evening", "night"];
+    if (!validSlots.includes(timeSlot)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid time slot. Choose: morning, afternoon, evening, or night",
+      });
+    }
+
+    // Convert date properly
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    console.log("Searching for date:", selectedDate);
+
+    // Get all tables
+    const allTables = await Table.find();
+    console.log(`Found ${allTables.length} total tables`);
+    console.log("Sample table:", allTables[0]);
+
+    // Find tables with CONFIRMED bookings for this date/slot (exclude pending)
+    const TableBooking = require("../model/TableBooking");
+    const bookedTables = await TableBooking.find({
+      date: selectedDate,
+      timeSlot: timeSlot,
+      status: { $in: ["paid", "active"] }, // Only confirmed bookings block tables
+    }).select("table");
+
+    console.log(`Found ${bookedTables.length} booked tables for this slot`);
+
+    const bookedTableIds = bookedTables.map((booking) => booking.table.toString());
+
+    // Filter out booked tables
+    const availableTables = allTables.filter(
+      (table) => !bookedTableIds.includes(table._id.toString())
+    );
+
+    console.log(`Returning ${availableTables.length} available tables`);
+
+    res.status(200).json({
+      success: true,
+      tables: availableTables,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 
 // ADMIN → Update table status (available / occupied)
@@ -288,6 +354,72 @@ exports.updateTableStatus = async (req, res) => {
       success: true,
       message: "Table updated successfully",
       table,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ADMIN → Delete table
+exports.deleteTable = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Table ID is required",
+      });
+    }
+
+    // Check if table exists
+    const table = await Table.findById(id);
+    if (!table) {
+      return res.status(404).json({
+        success: false,
+        message: "Table not found",
+      });
+    }
+
+    // Check for active bookings (paid or confirmed)
+    const activeBookings = await TableBooking.find({
+      table: id,
+      status: { $in: ["paid", "confirmed"] },
+    });
+
+    // If there are active bookings and no force flag, return error with booking details
+    if (activeBookings.length > 0 && req.query.force !== "true") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete table with active bookings. Please cancel or complete the bookings first.",
+        activeBookingsCount: activeBookings.length,
+        requiresForce: true,
+      });
+    }
+
+    // If force delete, cancel all associated bookings
+    if (activeBookings.length > 0 && req.query.force === "true") {
+      await TableBooking.updateMany(
+        { table: id },
+        { status: "cancelled" }
+      );
+      console.log(`Cancelled ${activeBookings.length} bookings for table ${table.tableNumber}`);
+    }
+
+    // Delete the table
+    await Table.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Table deleted successfully",
+      deletedTable: {
+        id: table._id,
+        tableNumber: table.tableNumber,
+      },
     });
 
   } catch (error) {

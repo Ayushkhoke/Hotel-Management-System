@@ -14,13 +14,29 @@ const userSchema = new mongoose.Schema({
          required: true, 
          unique: true },
 
+  authProvider: {
+    type: String,
+    enum: ["local", "google"],
+    default: "local",
+  },
+
+  googleId: {
+    type: String,
+  },
+
   password: { 
     type: String, 
-    required: true },
+    required: function requiredPassword() {
+      return this.authProvider !== "google";
+    },
+  },
 
     confirmpassword: { 
     type: String, 
-    required: true },
+    required: function requiredConfirmPassword() {
+      return this.authProvider !== "google";
+    },
+  },
 
   accountType: {
         type: String,
@@ -30,7 +46,7 @@ const userSchema = new mongoose.Schema({
    
     image: {
         type: String,
-        required: true,
+      required: true,
     },
     token: {
         type: String,

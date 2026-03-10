@@ -90,7 +90,8 @@ const tableRoutes = require("./routes/table");
 const roomRoutes = require("./routes/room");
 const bookingRoutes = require("./routes/booking");
 const paymentRoutes=require("./routes/payment");
-// const aiRoutes = require("./routes/aiRoutes");
+const aiRoutes = require("./routes/aiRoutes");
+const contactRoutes = require("./routes/contact");
 dotenv.config();
 database.connect();
 
@@ -107,14 +108,14 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://hotel-management-system-silk-sigma.vercel.app/"
+      "https://hotel-management-system-silk-sigma.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   })
 );
 
-app.options("*", cors());
+app.options(/.*/, cors());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -129,7 +130,8 @@ app.use("/api/v1/table", tableRoutes);
 app.use("/api/v1/room", roomRoutes);
 app.use("/api/v1/booking", bookingRoutes);
 app.use("/api/v1/payment", paymentRoutes);
-// app.use("/api/v1/aireceptionist", aiRoutes);
+app.use("/api/v1/aireceptionist", aiRoutes);
+app.use("/api/v1/contact", contactRoutes);
 app.get("/", (req, res) => {
   res.json({
     success: true,
