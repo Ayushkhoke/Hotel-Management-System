@@ -197,7 +197,7 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-amber-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-amber-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-amber-500 mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">Loading your dashboard...</p>
@@ -267,7 +267,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gradient-to-br from-slate-50 via-amber-50/30 to-slate-50 px-3 sm:px-4 py-5 sm:py-6 md:py-10 text-black">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-linear-to-br from-slate-50 via-amber-50/30 to-slate-50 px-3 sm:px-4 py-5 sm:py-6 md:py-10 text-black">
 
       {/* Hero Section */}
       <motion.div
@@ -278,7 +278,7 @@ export default function Profile() {
       >
         <div className="flex items-start sm:items-center gap-2 sm:gap-3 mb-2">
           <Sparkles className="text-amber-500 shrink-0 mt-1 sm:mt-0" size={24} />
-          <h1 className="text-2xl sm:text-3xl md:text-5xl leading-tight font-bold text-black break-words">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl leading-tight font-bold text-black wrap-break-word">
             Welcome Back, {user?.firstname}!
           </h1>
         </div>
@@ -306,13 +306,13 @@ export default function Profile() {
                     <Icon className={stat.iconColor} size={24} />
                   </div>
                   <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">{stat.title}</p>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">{stat.value}</h3>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 wrap-break-word">{stat.value}</h3>
                   <div className="flex items-center gap-1 mt-2 text-emerald-600 text-sm">
                     <TrendingUp size={16} />
                     <span className="font-semibold">Live</span>
                   </div>
                 </div>
-                <div className={`h-2 bg-gradient-to-r ${stat.color}`}></div>
+                <div className={`h-2 bg-linear-to-r ${stat.color}`}></div>
               </motion.div>
             );
           })}
@@ -329,7 +329,7 @@ export default function Profile() {
         <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
 
           {/* Gradient Header with Pattern */}
-          <div className="relative bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 h-32 sm:h-40 md:h-48 overflow-hidden">
+          <div className="relative bg-linear-to-r from-amber-500 via-orange-500 to-amber-600 h-32 sm:h-40 md:h-48 overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]"></div>
             </div>
@@ -357,10 +357,10 @@ export default function Profile() {
             {/* Name and Role Badge */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8">
               <div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 wrap-break-word">
                   {user?.firstname} {user?.lastname}
                 </h2>
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-semibold shadow-md">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-semibold shadow-md">
                   <Shield size={16} />
                   <span>{user.accountType}</span>
                 </div>
@@ -415,7 +415,7 @@ export default function Profile() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <button 
                     onClick={handleEditClick}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
                   >
                     <Edit size={18} />
                     <span>Edit Profile</span>
@@ -519,7 +519,7 @@ export default function Profile() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold hover:from-emerald-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-semibold hover:from-emerald-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
                   >
                     <Save size={18} />
                     <span>Save Changes</span>

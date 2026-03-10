@@ -49,7 +49,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-gray-100 overflow-x-hidden relative">
       <Sidebar />
 
-      <main className="flex-1 w-full max-w-full overflow-x-hidden p-4 sm:p-6 md:p-8 transition-all duration-300 relative z-[10]">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden p-4 sm:p-6 md:p-8 transition-all duration-300 relative z-10">
         <Outlet />
       </main>
     </div>

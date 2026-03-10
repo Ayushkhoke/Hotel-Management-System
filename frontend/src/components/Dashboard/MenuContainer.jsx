@@ -682,7 +682,7 @@ const MenuCard = React.memo(({ m, index, user, deleteHandler, orderHandler }) =>
         ) : (
           <button
             onClick={()=>orderHandler(m)}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:scale-[1.02]"
+            className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:scale-[1.02]"
           >
             Order Now
           </button>
@@ -762,7 +762,7 @@ export default function MenuContainer() {
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50 px-6 py-10">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-amber-50 px-6 py-10">
 
       <div className="max-w-7xl mx-auto">
 
@@ -859,7 +859,7 @@ export default function MenuContainer() {
 
               <button
               type="submit"
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl font-semibold"
+              className="w-full bg-linear-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl font-semibold"
               >
                 Add Menu Item
               </button>

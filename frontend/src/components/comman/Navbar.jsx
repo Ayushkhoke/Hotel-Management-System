@@ -73,7 +73,7 @@ export default function Navbar() {
     "relative text-sm font-medium tracking-wide hover:text-yellow-400 transition duration-300 after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-yellow-400 after:transition-all after:duration-300 hover:after:w-full";
 
   return (
-    <header className="fixed top-0 w-full z-[90] bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
+    <header className="fixed top-0 w-full z-90 bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 text-white ">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         {/* LOGO */}
@@ -122,14 +122,14 @@ export default function Navbar() {
       {/* MOBILE MENU OVERLAY */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-[80] md:hidden"
+          className="fixed inset-0 bg-black/60 z-80 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* MOBILE MENU */}
       <div className={`
-        fixed top-[73px] right-0 bottom-0 w-[75vw] max-w-[280px] z-[85]
+        fixed top-18.25 right-0 bottom-0 w-[75vw] max-w-70 z-85
         bg-black/95 backdrop-blur-xl
         transform-gpu will-change-transform transition-transform duration-300 ease-out
         md:hidden
