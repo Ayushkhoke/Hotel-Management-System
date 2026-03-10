@@ -39,13 +39,16 @@
 
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { LoginUser, googleAuthUser } from "../services/authApi.jsx";
+import { API_ORIGIN } from "../services/apis.jsx";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -56,6 +59,34 @@ export default function Login() {
   const [googleStatus, setGoogleStatus] = useState("loading");
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    // Speed up first API request by preconnecting and warming the backend.
+    const preconnect = document.createElement("link");
+    preconnect.rel = "preconnect";
+    preconnect.href = API_ORIGIN;
+    preconnect.crossOrigin = "";
+
+    const dnsPrefetch = document.createElement("link");
+    dnsPrefetch.rel = "dns-prefetch";
+    dnsPrefetch.href = API_ORIGIN;
+
+    document.head.appendChild(preconnect);
+    document.head.appendChild(dnsPrefetch);
+
+    fetch(`${API_ORIGIN}/`, {
+      method: "GET",
+      cache: "no-store",
+      credentials: "omit",
+    }).catch(() => {
+      // Ignore warm-up failures; login request is still sent normally.
+    });
+
+    return () => {
+      document.head.removeChild(preconnect);
+      document.head.removeChild(dnsPrefetch);
+    };
+  }, []);
 
   useEffect(() => {
     if (!googleClientId) {
@@ -131,6 +162,7 @@ export default function Login() {
 
   function submitHandler(e) {
     e.preventDefault();
+    if (loading) return;
     dispatch(LoginUser(formData, navigate));
   }
 
@@ -204,9 +236,10 @@ backgroundImage:
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg bg-amber-600 text-white font-semibold text-lg hover:bg-amber-700 transition shadow-md"
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-amber-600 text-white font-semibold text-lg hover:bg-amber-700 transition shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign In
+            {loading ? "Signing In..." : "Sign In"}
           </button>
 
           <div className="relative py-1">
