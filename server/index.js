@@ -103,7 +103,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://hotel-management-system-silk-sigma.vercel.app",
-  "https://hotel-management-system-nrzc1vfaf-spartan253s-projects.vercel.app",
+
 ];
 
 const corsOptions = {

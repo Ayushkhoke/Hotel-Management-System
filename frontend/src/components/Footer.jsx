@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
-export default function Footer() {
+function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -53,34 +53,34 @@ export default function Footer() {
           <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/dashboard/room" className="hover:text-green-500 transition duration-300">
+              <Link to="/dashboard/room" className="hover:text-green-500 transition duration-300">
                 Rooms
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/dashboard/menu" className="hover:text-green-500 transition duration-300">
+              <Link to="/dashboard/menu" className="hover:text-green-500 transition duration-300">
                 Menu
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/dashboard/table" className="hover:text-green-500 transition duration-300">
+              <Link to="/dashboard/table" className="hover:text-green-500 transition duration-300">
                 Table Booking
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Events
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Careers
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -90,34 +90,34 @@ export default function Footer() {
           <h4 className="text-lg font-semibold text-white mb-4">Services</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Room Booking
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Fine Dining
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Spa & Wellness
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Conference Halls
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Tour Packages
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/" className="hover:text-green-500 transition duration-300">
+              <Link to="/" className="hover:text-green-500 transition duration-300">
                 Transport Services
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -173,12 +173,12 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div className="flex items-center justify-center gap-6">
-            <a href="/" className="hover:text-green-500 transition duration-300">
+            <Link to="/" className="hover:text-green-500 transition duration-300">
               Privacy Policy
-            </a>
-            <a href="/" className="hover:text-green-500 transition duration-300">
+            </Link>
+            <Link to="/" className="hover:text-green-500 transition duration-300">
               Terms of Service
-            </a>
+            </Link>
           </div>
 
           {/* Payment Methods */}
@@ -195,3 +195,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default memo(Footer);

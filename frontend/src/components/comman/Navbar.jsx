@@ -47,12 +47,12 @@
 // }
 
 
-import React from "react";
+import React, { memo } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProfileDropdown from "./ProfileDropdown";
 
-export default function Navbar() {
+function Navbar() {
   const { token } = useSelector((state) => state.auth);
 
   const navStyle =
@@ -126,3 +126,5 @@ export default function Navbar() {
     </header>
   );
 }
+
+export default memo(Navbar);
