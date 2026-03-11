@@ -325,6 +325,7 @@ export default function AIChat() {
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isListening, setIsListening] = useState(false);
+  const [micModeEnabled, setMicModeEnabled] = useState(false);
   const [speakerSupported, setSpeakerSupported] = useState(false);
   const [micSupported, setMicSupported] = useState(false);
   const [bookingFlow, setBookingFlow] = useState({
@@ -366,6 +367,7 @@ export default function AIChat() {
   const recognitionRef = useRef(null);
   const chatRef = useRef(chat);
   const loadingRef = useRef(false);
+  const micModeEnabledRef = useRef(false);
   const voiceEnabledRef = useRef(voiceEnabled);
   const bookingFlowRef = useRef(bookingFlow);
   const orderFlowRef = useRef(orderFlow);
@@ -384,6 +386,10 @@ export default function AIChat() {
   useEffect(() => {
     loadingRef.current = loading;
   }, [loading]);
+
+  useEffect(() => {
+    micModeEnabledRef.current = micModeEnabled;
+  }, [micModeEnabled]);
 
   useEffect(() => {
     voiceEnabledRef.current = voiceEnabled;
@@ -450,11 +456,31 @@ export default function AIChat() {
     recognition.continuous = false;
 
     recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+
+      if (!micModeEnabledRef.current || loadingRef.current) {
+        return;
+      }
+
+      window.setTimeout(() => {
+        if (!micModeEnabledRef.current || !recognitionRef.current || loadingRef.current) {
+          return;
+        }
+
+        try {
+          recognitionRef.current.start();
+        } catch {
+          // Ignore InvalidStateError when browser is still shutting down previous session.
+        }
+      }, 250);
+    };
     recognition.onerror = (event) => {
       setIsListening(false);
 
       if (event?.error === "not-allowed" || event?.error === "service-not-allowed") {
+        setMicModeEnabled(false);
+        micModeEnabledRef.current = false;
         appendAIMessage("Microphone permission is blocked. Please allow microphone access and try again.");
       }
     };
@@ -478,6 +504,18 @@ export default function AIChat() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!micModeEnabled || !micSupported || !recognitionRef.current || isListening || loading) {
+      return;
+    }
+
+    try {
+      recognitionRef.current.start();
+    } catch {
+      // Ignore InvalidStateError when an existing recognition session is active.
+    }
+  }, [micModeEnabled, micSupported, isListening, loading]);
 
   function speakReply(text) {
     if (!voiceEnabledRef.current || !text) return;
@@ -1333,18 +1371,27 @@ export default function AIChat() {
   }
 
   function toggleListening() {
-    if (!micSupported || !recognitionRef.current || loading) return;
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      return;
-    }
+    if (!micSupported || !recognitionRef.current) return;
 
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
 
-    recognitionRef.current.start();
+    if (micModeEnabledRef.current) {
+      setMicModeEnabled(false);
+      micModeEnabledRef.current = false;
+      recognitionRef.current.stop();
+      return;
+    }
+
+    setMicModeEnabled(true);
+    micModeEnabledRef.current = true;
+
+    try {
+      recognitionRef.current.start();
+    } catch {
+      // Ignore InvalidStateError if recognition was already started by browser.
+    }
   }
 
   return (
@@ -1659,16 +1706,19 @@ export default function AIChat() {
             <button
               type="button"
               onClick={toggleListening}
-              disabled={!micSupported || loading}
-              aria-label={isListening ? "Stop microphone" : "Start microphone"}
-              title={isListening ? "Stop microphone" : "Start microphone"}
+              disabled={!micSupported}
+              aria-label={micModeEnabled ? "Turn microphone off" : "Turn microphone on"}
+              title={micModeEnabled ? "Turn microphone off" : "Turn microphone on"}
               className={`px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border whitespace-nowrap min-h-11 sm:min-h-0 ${
-                isListening
+                micModeEnabled
                   ? "bg-red-600 text-white border-red-600"
                   : "bg-white text-gray-800 border-gray-300"
               } disabled:opacity-60`}
             >
-              {isListening ? <Square size={16} /> : <Mic size={16} />}
+              <span className="inline-flex items-center gap-1.5">
+                {isListening ? <Square size={16} /> : <Mic size={16} />}
+                <span>{micModeEnabled ? "Mic On" : "Mic Off"}</span>
+              </span>
             </button>
 
             <button
@@ -1686,7 +1736,7 @@ export default function AIChat() {
 
             <button
               type="button"
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={loading}
               className="col-span-1 px-4 sm:px-5 py-2.5 sm:py-2 bg-amber-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-700 disabled:opacity-60 whitespace-nowrap min-h-11 sm:min-h-0"
             >
