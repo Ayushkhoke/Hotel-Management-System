@@ -311,6 +311,43 @@ function parseGuestCount(input) {
   return found && value > 0 ? value : null;
 }
 
+function toSafeText(value, fallback = "N/A") {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return Number.isFinite(value) ? String(value) : fallback;
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+
+  if (typeof value === "object") {
+    if (typeof value.$numberDecimal === "string") return value.$numberDecimal;
+    if (typeof value.$numberInt === "string") return value.$numberInt;
+    if (typeof value.$numberLong === "string") return value.$numberLong;
+    if (typeof value.toString === "function") {
+      const result = value.toString();
+      if (result && result !== "[object Object]") return result;
+    }
+  }
+
+  return fallback;
+}
+
+function toSafeNumber(value, fallback = 0) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : fallback;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  if (value && typeof value === "object") {
+    const decimalValue = value.$numberDecimal || value.$numberInt || value.$numberLong;
+    if (typeof decimalValue === "string") {
+      const parsed = Number(decimalValue);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+  }
+
+  return fallback;
+}
+
 export default function AIChat() {
   const dispatch = useDispatch();
   const { token, user } = useSelector((state) => state.auth);
@@ -1052,7 +1089,7 @@ export default function AIChat() {
 
   async function handleOrderQuantityResponse(inputText) {
     const flow = orderFlowRef.current;
-    const quantity = Number(String(inputText || "").match(/\d+/)?.[0]);
+    const quantity = parseGuestCount(inputText);
 
     if (!quantity || quantity < 1) {
       appendAIMessage("Please enter a valid quantity (e.g., 1, 2, 3...)");
@@ -1297,6 +1334,14 @@ export default function AIChat() {
     return () => window.clearTimeout(timer);
   }, [speakerSupported]);
 
+  function handleSubmitMessage(event) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    sendMessage();
+  }
+
   async function sendMessage(forcedMessage) {
     const trimmed = (forcedMessage ?? message).trim();
     if (!trimmed || loadingRef.current) return;
@@ -1469,7 +1514,7 @@ export default function AIChat() {
                           <p className="text-xs text-blue-800">📍 Location: {tableItem.location}</p>
                         )}
                         <p className="text-xs text-blue-800">👥 Capacity: {tableItem.capacity} guests</p>
-                        {tableItem.features && tableItem.features.length > 0 && (
+                        {Array.isArray(tableItem.features) && tableItem.features.length > 0 && (
                           <p className="text-xs text-blue-800">
                             ✨ Features: {tableItem.features.join(", ")}
                           </p>
@@ -1529,11 +1574,11 @@ export default function AIChat() {
                   
                   <div className="mb-4 space-y-1">
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Room:</span> {msg.booking.room?.type || 'Room'} #{msg.booking.room?.roomNumber || ''}
+                      <span className="font-semibold text-gray-700">Room:</span> {toSafeText(msg.booking.room?.type, "Room")} #{toSafeText(msg.booking.room?.roomNumber, "")}
                     </p>
                     <p className="text-xs text-gray-600">
                       <span className="font-semibold text-gray-700">Total Amount:</span> 
-                      <span className="text-green-700 font-bold ml-1">$ {msg.booking.totalPrice}</span>
+                      <span className="text-green-700 font-bold ml-1">$ {toSafeNumber(msg.booking.totalPrice, 0)}</span>
                     </p>
                   </div>
 
@@ -1578,14 +1623,14 @@ export default function AIChat() {
                   
                   <div className="mb-4 space-y-1">
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Item:</span> {msg.menuItem?.name || 'Food Item'}
+                      <span className="font-semibold text-gray-700">Item:</span> {toSafeText(msg.menuItem?.name, "Food Item")}
                     </p>
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Quantity:</span> {msg.quantity} plate(s)
+                      <span className="font-semibold text-gray-700">Quantity:</span> {toSafeNumber(msg.quantity, 0)} plate(s)
                     </p>
                     <p className="text-xs text-gray-600">
                       <span className="font-semibold text-gray-700">Total Amount:</span> 
-                      <span className="text-blue-700 font-bold ml-1">$ {msg.totalAmount}</span>
+                      <span className="text-blue-700 font-bold ml-1">$ {toSafeNumber(msg.totalAmount, 0)}</span>
                     </p>
                   </div>
 
@@ -1630,25 +1675,25 @@ export default function AIChat() {
                   
                   <div className="mb-4 space-y-1">
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Table:</span> #{msg.table?.tableNumber || msg.booking.table?.tableNumber}
+                      <span className="font-semibold text-gray-700">Table:</span> #{toSafeText(msg.table?.tableNumber || msg.booking.table?.tableNumber, "")}
                     </p>
                     {(msg.table?.location || msg.booking.table?.location) && (
                       <p className="text-xs text-gray-600">
-                        <span className="font-semibold text-gray-700">Location:</span> {msg.table?.location || msg.booking.table?.location}
+                        <span className="font-semibold text-gray-700">Location:</span> {toSafeText(msg.table?.location || msg.booking.table?.location, "")}
                       </p>
                     )}
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Date:</span> {msg.flowData?.date || msg.booking.date}
+                      <span className="font-semibold text-gray-700">Date:</span> {toSafeText(msg.flowData?.date || msg.booking.date, "")}
                     </p>
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Time:</span> {msg.flowData?.timeSlot || msg.booking.timeSlot}
+                      <span className="font-semibold text-gray-700">Time:</span> {toSafeText(msg.flowData?.timeSlot || msg.booking.timeSlot, "")}
                     </p>
                     <p className="text-xs text-gray-600">
-                      <span className="font-semibold text-gray-700">Guests:</span> {msg.flowData?.guests || msg.booking.guests}
+                      <span className="font-semibold text-gray-700">Guests:</span> {toSafeNumber(msg.flowData?.guests || msg.booking.guests, 0)}
                     </p>
                     <p className="text-xs text-gray-600">
                       <span className="font-semibold text-gray-700">Total Amount:</span> 
-                      <span className="text-green-700 font-bold ml-1">$ {msg.totalAmount || msg.booking.amount}</span>
+                      <span className="text-green-700 font-bold ml-1">$ {toSafeNumber(msg.totalAmount || msg.booking.amount, 0)}</span>
                     </p>
                   </div>
 
@@ -1688,13 +1733,16 @@ export default function AIChat() {
       </div>
 
       <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <form onSubmit={handleSubmitMessage} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) sendMessage();
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
             }}
             autoComplete="off"
             enterKeyHint="send"
@@ -1735,15 +1783,14 @@ export default function AIChat() {
             </button>
 
             <button
-              type="button"
-              onClick={() => sendMessage()}
-              disabled={loading}
+              type="submit"
+              disabled={loading || !message.trim()}
               className="col-span-1 px-4 sm:px-5 py-2.5 sm:py-2 bg-amber-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-700 disabled:opacity-60 whitespace-nowrap min-h-11 sm:min-h-0"
             >
               Send
             </button>
           </div>
-        </div>
+        </form>
       </div>
       {!micSupported && (
         <p className="px-4 pb-4 text-xs text-gray-500">

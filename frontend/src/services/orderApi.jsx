@@ -22,8 +22,8 @@ export function placeOrder(data, token) {
 
       toast.success("Order placed successfully");
 
-      // ✅ Dispatch to Redux
-      dispatch(setOrder(res.data.data));
+      // Keep `order` as array for list views; store latest created order separately.
+      dispatch(setOrderItem(res.data.data));
 
       return res.data.data;
 
