@@ -14,6 +14,7 @@ const {
 router.post("/bookroom", auth, bookRoom);
 router.get("/my-bookings", auth, getMyBookings);
 router.delete("/deletebooking", auth, deleteBooking);
+router.delete("/deletebooking/:bookingId", auth, deleteBooking);
 // menus
 router.post("/createmenu", auth, isAdmin,
   upload.single("image"),

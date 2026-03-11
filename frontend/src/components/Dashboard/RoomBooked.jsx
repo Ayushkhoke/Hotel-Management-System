@@ -152,8 +152,12 @@ export default function RoomBooked() {
 
   async function handleCancel(id) {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
-    await deleteBooking(id, token);
-    dispatch(getMyBookings(token));
+    try {
+      await deleteBooking(id, token);
+      dispatch(getMyBookings(token));
+    } catch {
+      // Toast is already handled in API layer.
+    }
   }
 
   return (
@@ -365,7 +369,7 @@ export default function RoomBooked() {
                         </motion.button>
                       )}
 
-                      {item.status !== "cancelled" && (
+                      {item.status !== "cancelled" && item.paymentStatus === "paid" && (
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}

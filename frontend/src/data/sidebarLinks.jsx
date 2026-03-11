@@ -73,13 +73,9 @@ export const SIDEBAR_LINKS = [
   //    path: "/dashboard/order",
   //    type: ACCOUNT_TYPES.ADMIN,
   // },
-  {
-    id: 6,
-    name: "Logout",
-    icon: LogOut,
-  },
+ 
    {
-    id: 7,
+    id:6,
     name: "Settings",
     icon: Settings,
     path: "/dashboard/settings",

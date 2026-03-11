@@ -62,15 +62,15 @@ export function getMyBookings(token) {
 
 
 export async function deleteBooking(bookingId, token) {
-  try {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
+  try {
     const res = await apiConnector(
       "DELETE",
-      booking.DELETE_BOOKING_API,
-      { bookingId },
+      `${booking.DELETE_BOOKING_API}/${bookingId}`,
+      null,
       headers
     );
 
@@ -78,13 +78,37 @@ export async function deleteBooking(bookingId, token) {
       throw new Error(res.data.message);
     }
 
-    toast.success("Booking deleted successfully");
-
+    toast.success(res?.data?.message || "Booking cancelled successfully");
     return true;
   } catch (error) {
-    toast.error(
-      error.response?.data?.message ||
-        "Failed to delete booking"
-    );
+    // Backward compatibility for deployed servers still using DELETE /deletebooking with bookingId in body.
+    if (error?.response?.status === 404) {
+      try {
+        const fallbackRes = await apiConnector(
+          "DELETE",
+          booking.DELETE_BOOKING_API,
+          { bookingId },
+          headers
+        );
+
+        if (!fallbackRes?.data?.success) {
+          throw new Error(fallbackRes?.data?.message || "Failed to cancel booking");
+        }
+
+        toast.success(fallbackRes?.data?.message || "Booking cancelled successfully");
+        return true;
+      } catch (fallbackError) {
+        const fallbackMessage =
+          fallbackError?.response?.data?.message ||
+          fallbackError?.message ||
+          "Failed to cancel booking";
+        toast.error(fallbackMessage);
+        throw new Error(fallbackMessage);
+      }
+    }
+
+    const message = error?.response?.data?.message || error?.message || "Failed to cancel booking";
+    toast.error(message);
+    throw new Error(message);
   }
 }

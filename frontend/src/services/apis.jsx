@@ -62,6 +62,7 @@ export const payment={
 export const booking={
      ROOM_BOOK_API:BASE_URL +"/booking/bookroom",
      GET_MY_BOOKINGS_API:BASE_URL +"/booking/my-bookings",
+  DELETE_BOOKING_API:BASE_URL +"/booking/deletebooking",
 }
 
 export const ai = {

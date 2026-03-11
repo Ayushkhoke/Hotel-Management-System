@@ -145,25 +145,40 @@ exports.getMyBookings = async (req, res) => {
 
 exports.deleteBooking=async(req,res)=>{
   try{
-    const{bookingId}=req.body;
+    const bookingId = req.body?.bookingId || req.query?.bookingId || req.params?.bookingId;
+    const userId = req.user?.id;
 
     if(!bookingId){
-  return res.status(404).json({
+  return res.status(400).json({
         success: false,
-        message: "Booking not found"
+        message: "bookingId is required"
       });
     }
-    const booking=await Booking.findByIdAndDelete(bookingId);
+    const booking = await Booking.findOne({ _id: bookingId, user: userId });
 
     if(!booking){
   return res.status(400).json({
     success:false,
-    message:"not able to delete the booking"
+    message:"Unable to cancel booking"
   })
     }
+
+    if (booking.status === "cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Booking already cancelled",
+      });
+    }
+
+    booking.status = "cancelled";
+    if (booking.paymentStatus === "pending") {
+      booking.paymentStatus = "failed";
+    }
+    await booking.save();
+
        return res.status(200).json({
       success: true,
-      message: "Booking deleted successfully"
+      message: "Booking cancelled successfully"
     });
 
   }
