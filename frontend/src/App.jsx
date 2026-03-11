@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useEffect } from 'react'
 import './App.css'
 import Navbar from './components/comman/Navbar.jsx'
 import Footer from './components/Footer.jsx'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { HEALTHCHECK_URL } from './services/apis.jsx'
 import { scheduleIdleTask, warmBackendConnection } from './utils/performance.js'
 
@@ -41,6 +41,8 @@ const PageLoader = () => (
   </div>
 ) 
 function App() {
+  const location = useLocation()
+
   useEffect(() => {
     const cancelIdleTask = scheduleIdleTask(() => {
       warmBackendConnection(HEALTHCHECK_URL)
@@ -93,7 +95,7 @@ function App() {
         
       </div>
 
-      <Footer />
+      {location.pathname === '/' && <Footer />}
     </>
   )
 }

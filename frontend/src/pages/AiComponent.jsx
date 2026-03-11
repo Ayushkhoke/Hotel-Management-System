@@ -219,6 +219,98 @@ function parseRoomType(input) {
   return null;
 }
 
+function parseGuestCount(input) {
+  const normalized = String(input || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!normalized) return null;
+
+  const numeric = Number(normalized.match(/\d+/)?.[0]);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+
+  if (/\b(a|an)\s+(guest|guests|person|people)\b/.test(normalized)) {
+    return 1;
+  }
+
+  const ones = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+    eleven: 11,
+    twelve: 12,
+    thirteen: 13,
+    fourteen: 14,
+    fifteen: 15,
+    sixteen: 16,
+    seventeen: 17,
+    eighteen: 18,
+    nineteen: 19,
+  };
+
+  const tens = {
+    twenty: 20,
+    thirty: 30,
+    forty: 40,
+    fifty: 50,
+    sixty: 60,
+    seventy: 70,
+    eighty: 80,
+    ninety: 90,
+  };
+
+  const ignore = new Set(["and", "guest", "guests", "person", "people", "persons"]);
+  const tokens = normalized.split(" ");
+
+  let total = 0;
+  let current = 0;
+  let found = false;
+
+  for (const token of tokens) {
+    if (ignore.has(token)) continue;
+
+    if (Object.prototype.hasOwnProperty.call(ones, token)) {
+      current += ones[token];
+      found = true;
+      continue;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(tens, token)) {
+      current += tens[token];
+      found = true;
+      continue;
+    }
+
+    if (token === "hundred" && current > 0) {
+      current *= 100;
+      found = true;
+      continue;
+    }
+
+    if (token === "thousand" && current > 0) {
+      total += current * 1000;
+      current = 0;
+      found = true;
+      continue;
+    }
+
+    if (found) break;
+  }
+
+  const value = total + current;
+  return found && value > 0 ? value : null;
+}
+
 export default function AIChat() {
   const dispatch = useDispatch();
   const { token, user } = useSelector((state) => state.auth);
@@ -508,7 +600,7 @@ export default function AIChat() {
     }
 
     if (flow.step === "guests") {
-      const guests = Number(String(inputText || "").match(/\d+/)?.[0]);
+      const guests = parseGuestCount(inputText);
       if (!guests || guests < 1) {
         appendAIMessage("Please enter a valid number of guests.");
         return true;
@@ -1051,7 +1143,7 @@ export default function AIChat() {
     }
 
     if (flow.step === "guests") {
-      const guests = Number(String(inputText || "").match(/\d+/)?.[0]);
+      const guests = parseGuestCount(inputText);
       if (!guests || guests < 1) {
         appendAIMessage("Please enter a valid number of guests.");
         return true;
@@ -1256,17 +1348,17 @@ export default function AIChat() {
   }
 
   return (
-    <section className="mt-10 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 bg-linear-to-r from-amber-600 to-yellow-500 text-white">
-        <h2 className="text-lg md:text-xl font-semibold">AI Receptionist</h2>
-        <p className="text-sm text-amber-50">Ask by typing or speaking. The receptionist can reply with voice.</p>
+    <section className="mt-6 sm:mt-10 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="px-4 sm:px-5 py-3 sm:py-4 bg-linear-to-r from-amber-600 to-yellow-500 text-white">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold">AI Receptionist</h2>
+        <p className="text-xs sm:text-sm text-amber-50">Ask by typing or speaking. The receptionist can reply with voice.</p>
       </div>
 
-      <div className="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50">
+      <div className="h-[55vh] min-h-80 max-h-[65vh] sm:h-80 sm:min-h-0 sm:max-h-none md:h-96 overflow-y-auto overscroll-contain p-3 sm:p-4 space-y-3 bg-gray-50">
         {chat.map((msg, index) => (
           <div key={`${msg.role}-${index}`} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] px-4 py-2 rounded-xl text-sm leading-relaxed ${
+              className={`max-w-[95%] sm:max-w-[85%] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm leading-relaxed wrap-break-word ${
                 msg.role === "user"
                   ? "bg-amber-600 text-white"
                   : "bg-white text-gray-800 border border-gray-200"
@@ -1548,27 +1640,29 @@ export default function AIChat() {
         <div ref={chatEndRef} />
       </div>
 
-      <div className="p-3 sm:p-4 border-t border-gray-200">
+      <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
+              if (e.key === "Enter" && !e.shiftKey) sendMessage();
             }}
+            autoComplete="off"
+            enterKeyHint="send"
             placeholder="Ask about available rooms..."
-            className="w-full min-w-0 sm:flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full min-w-0 sm:flex-1 border border-gray-300 rounded-lg px-4 py-3 sm:py-2 text-base sm:text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
 
-          <div className="grid grid-cols-2 sm:flex gap-2">
+          <div className="grid grid-cols-3 sm:flex gap-2">
             <button
               type="button"
               onClick={toggleListening}
               disabled={!micSupported || loading}
               aria-label={isListening ? "Stop microphone" : "Start microphone"}
               title={isListening ? "Stop microphone" : "Start microphone"}
-              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium border whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border whitespace-nowrap min-h-11 sm:min-h-0 ${
                 isListening
                   ? "bg-red-600 text-white border-red-600"
                   : "bg-white text-gray-800 border-gray-300"
@@ -1581,7 +1675,7 @@ export default function AIChat() {
               type="button"
               onClick={() => setVoiceEnabled((prev) => !prev)}
               disabled={!speakerSupported}
-              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium border whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border whitespace-nowrap min-h-11 sm:min-h-0 ${
                 voiceEnabled
                   ? "bg-amber-100 text-amber-900 border-amber-300"
                   : "bg-white text-gray-700 border-gray-300"
@@ -1594,7 +1688,7 @@ export default function AIChat() {
               type="button"
               onClick={sendMessage}
               disabled={loading}
-              className="col-span-2 sm:col-span-1 px-4 sm:px-5 py-2 bg-amber-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-700 disabled:opacity-60 whitespace-nowrap"
+              className="col-span-1 px-4 sm:px-5 py-2.5 sm:py-2 bg-amber-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-700 disabled:opacity-60 whitespace-nowrap min-h-11 sm:min-h-0"
             >
               Send
             </button>
