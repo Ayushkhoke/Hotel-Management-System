@@ -185,6 +185,24 @@
 //                 className="w-full border border-slate-300 rounded-md px-3 py-2"
 //               />
 //             </div>
+            <div>
+              <label className="block text-sm text-slate-600 mb-1">
+                Room Type
+              </label>
+              <select
+                name="type"
+                value={formdata.type}
+                onChange={changeHandler}
+                className="w-full border border-slate-300 rounded-md px-3 py-2"
+              >
+                <option value="">Select Room Type</option>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Suite">Suite</option>
+                <option value="Any">Any</option>
+              </select>
+            </div>
 
 //             <div>
 //               <label className="block text-sm text-slate-600 mb-1">

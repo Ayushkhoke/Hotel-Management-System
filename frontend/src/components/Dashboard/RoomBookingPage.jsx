@@ -106,6 +106,9 @@ export default function RoomBookingPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Room type selection for admin
+  const [selectedRoomType, setSelectedRoomType] = useState("");
+  const roomTypeOptions = ["Single", "Double", "Deluxe", "Suite", "Any"];
   const room = location.state?.room;
 
   const roomImages = useMemo(() => {
@@ -152,6 +155,20 @@ export default function RoomBookingPage() {
           <ArrowLeft size={18} />
           Back to Rooms
         </button>
+        {/* Admin Room Type Selection */}
+        <div className="max-w-md mx-auto mb-6">
+          <label className="block text-sm text-slate-600 mb-1">Room Type (Admin Select)</label>
+          <select
+            value={selectedRoomType}
+            onChange={e => setSelectedRoomType(e.target.value)}
+            className="w-full border border-slate-300 rounded-md px-3 py-2"
+          >
+            <option value="">Select Room Type</option>
+            {roomTypeOptions.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
 
         <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-5 sm:gap-8">
 
