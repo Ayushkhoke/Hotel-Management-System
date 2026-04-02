@@ -300,16 +300,16 @@ export default function Tablecontainer() {
               return (
                 <article 
                   key={t._id} 
-                  className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="group bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-[44%_56%]">
                     
                     {/* Image Section */}
-                    <div className="relative h-44 sm:h-52 md:h-60 lg:h-full bg-gray-100">
+                    <div className="relative aspect-video bg-gray-100 overflow-hidden">
                       <img
                         src={image}
                         alt={`Table ${t.tableNumber}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                         decoding="async"
                       />
