@@ -36,12 +36,16 @@ import {apiConnector} from './apiconnector'
 import { setTables,setTable,setEditTable,removeTable } from "../slices/tableSlice";
 import { setLoading } from "../slices/authSlice";
 
-export function createTable(data, navigate, token) {
+export function createTable(data, token) {
   return async (dispatch) => {
     dispatch(setLoading(true));
 
     try {
-     const headers = {
+      if (!token) {
+        throw new Error("Session expired. Please login again.");
+      }
+
+      const headers = {
         Authorization: `Bearer ${token}`,
       };
       const res = await apiConnector(
@@ -57,11 +61,10 @@ export function createTable(data, navigate, token) {
       }
 
       toast.success("Table created successfully");
-      navigate("/dashboard/table");
-      console.log(token);
+      dispatch(getalltable(token));
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to create table"
+        error.response?.data?.message || error.message || "Failed to create table"
       );
     }
 
@@ -162,9 +165,7 @@ export  function getalltable(token) {
   let result = [];
 
   try {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     const res = await apiConnector(
       "GET",

@@ -185,24 +185,7 @@
 //                 className="w-full border border-slate-300 rounded-md px-3 py-2"
 //               />
 //             </div>
-            <div>
-              <label className="block text-sm text-slate-600 mb-1">
-                Room Type
-              </label>
-              <select
-                name="type"
-                value={formdata.type}
-                onChange={changeHandler}
-                className="w-full border border-slate-300 rounded-md px-3 py-2"
-              >
-                <option value="">Select Room Type</option>
-                <option value="Single">Single</option>
-                <option value="Double">Double</option>
-                <option value="Deluxe">Deluxe</option>
-                <option value="Suite">Suite</option>
-                <option value="Any">Any</option>
-              </select>
-            </div>
+
 
 //             <div>
 //               <label className="block text-sm text-slate-600 mb-1">
@@ -2045,14 +2028,21 @@ export default function RoomContainer() {
                   required
                 />
 
-                <input
+                <select
                   name="type"
-                  placeholder="Room Type (e.g., Deluxe, Suite)"
                   value={formdata.type}
                   onChange={changeHandler}
                   className="w-full bg-white border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-sm"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select Room Type
+                  </option>
+                  <option value="Single">Single</option>
+                  <option value="Double">Double</option>
+                  <option value="Deluxe">Deluxe</option>
+                  <option value="Suite">Suite</option>
+                </select>
 
                 <input
                   type="number"

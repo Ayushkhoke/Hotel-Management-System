@@ -20,6 +20,7 @@ export function createRoom(data, token) {
       }
 
       toast.success("Room created");
+      dispatch(getAllRooms(token));
       dispatch(clearRoom());
     } catch (err) {
       toast.error(err.response?.data?.message || "Create failed");
@@ -112,9 +113,9 @@ export function getAllRooms(token) {
     let result = [];
 
     try {
-      const headers = {
-        Authorization: `Bearer ${token}`, // optional if public
-      };
+      const headers = token
+        ? { Authorization: `Bearer ${token}` }
+        : {};
 
       const res = await apiConnector(
         "GET",
@@ -132,7 +133,7 @@ export function getAllRooms(token) {
 
     } catch (error) {
       console.log("Error fetching rooms", error);
-      toast.error("Could not get rooms");
+      toast.error(error.response?.data?.message || "Could not get rooms");
     }
   };
 }

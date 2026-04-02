@@ -29,8 +29,8 @@ router.put(
 );
 
 router.delete("/deleteroom", auth, isAdmin, deleteRoom);
-router.get("/getRooms", auth, getRooms);
-router.get("/getAvailableRooms", auth, getAvailableRooms);
+router.get("/getRooms", getRooms);
+router.get("/getAvailableRooms", getAvailableRooms);
 
 //review
 router.post("/create", auth, createReview);

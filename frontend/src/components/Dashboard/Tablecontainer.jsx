@@ -99,10 +99,12 @@ export default function Tablecontainer() {
   const [searchTableNo, setSearchTableNo] = useState("");
   const [sortBy, setSortBy] = useState("popular");
   const [confirmationModal, setConfirmationModal] = useState(null);
+  const [resetKey, setResetKey] = useState(0);
 
   const [formdata, setFormdata] = useState({
     tableNumber: "",
     capacity: "",
+    price: "",
     status: "available",
     image: null,
   });
@@ -148,9 +150,12 @@ export default function Tablecontainer() {
     setFormdata({
       tableNumber: "",
       capacity: "",
+      price: "",
       status: "available",
       image: null,
     });
+
+    setResetKey((prev) => prev + 1);
 
     dispatch(setEditTable(false));
   }
@@ -162,6 +167,7 @@ export default function Tablecontainer() {
     setFormdata({
       tableNumber: selectedTable.tableNumber,
       capacity: selectedTable.capacity,
+      price: selectedTable.price || "",
       status: selectedTable.status,
       image: null,
     });
@@ -341,7 +347,7 @@ export default function Tablecontainer() {
                               {(3.9 + (Number(t.tableNumber || 1) % 8) / 10).toFixed(1)}
                             </span>
                             <span>Reception</span>
-                            <span className="hidden sm:inline">Family Space</span>
+                            <span>Family Space</span>
                           </div>
 
                           <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300">
@@ -351,7 +357,7 @@ export default function Tablecontainer() {
                                 ${formatCurrency(tablePrice)}
                               </span>
                               <span className="text-sm text-gray-500">/ slot</span>
-                              <span className="hidden sm:inline text-lg line-through text-gray-400 font-semibold">
+                              <span className="text-lg line-through text-gray-400 font-semibold">
                                 ${formatCurrency(oldPrice)}
                               </span>
                               <span className="text-sm text-orange-500 font-semibold">
@@ -430,6 +436,17 @@ export default function Tablecontainer() {
                   required
                 />
 
+                <input
+                  type="number"
+                  name="price"
+                  placeholder="Price"
+                  value={formdata.price}
+                  onChange={changehandler}
+                  className="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                  min="1"
+                  required
+                />
+
                 <select
                   name="status"
                   value={formdata.status}
@@ -441,6 +458,7 @@ export default function Tablecontainer() {
                 </select>
 
                 <Upload
+                  key={resetKey}
                   label="Table Image"
                   onChange={(file) =>
                     setFormdata((prev) => ({

@@ -117,7 +117,7 @@ console.log("FILES:", req.files);
     ) {
       return res.status(400).json({
         success: false,
-        message: "All fields required",
+        message: "All fields required (tableNumber, capacity, status, price, image)",
       });
     }
 
